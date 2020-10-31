@@ -1,2 +1,2 @@
 # abstouch-nux
-An absolute touchpad driver for GNU/Linux.
+An absolute touchpad input client for GNU/Linux.

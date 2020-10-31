@@ -8,11 +8,11 @@ import (
 
 func main() {
   args := os.Args[1:]
-  var options, other_args []string
 
+  var option_args, other_args []string
   for i := 0; i < len(args); i++ {
     if strings.HasPrefix(args[i], "-") {
-      options = append(options, args[i])
+      option_args = append(option_args, args[i])
     } else {
       other_args = append(other_args, args[i])
     }
@@ -25,6 +25,20 @@ func main() {
     os.Exit(1)
   }
 
+  var options []string
+  if len(option_args) > 0 {
+    for i := 0; i < len(option_args); i++ {
+      if strings.HasPrefix(option_args[i], "--") {
+        options = append(options, strings.Replace(option_args[i], "--", "", 1))
+      } else {
+        opt_str := strings.Replace(option_args[i], "-", "", 1)
+        for v := 0; v < len(opt_str); v++ {
+          options = append(options, string(opt_str[v]))
+        }
+      }
+    }
+  }
+
   command := strings.ToLower(other_args[0])
   if command == "help" {
     fmt.Println("\033[1;32m---====\033[1;37mabstouch-nux\033[1;32m====---")
@@ -34,6 +48,10 @@ func main() {
     fmt.Println("\033[1;32m => \033[;mhelp \033[1;32m=> \033[;mShows this text.")
     fmt.Println("\033[1;32m => \033[;mstart \033[1;32m=> \033[;mStarts abstouch-nux.")
     fmt.Println("\033[1;32m => \033[;mstop \033[1;32m=> \033[;mTerminates abstouch-nux.")
+    fmt.Println("")
+    fmt.Println("\033[1;32m---=======\033[1;37mOptions\033[1;32m======---")
+    fmt.Println("\033[1;32m => \033[;m-q\033[1;32m, \033[;m--quiet \033[1;32m=> \033[;mDisables output except err.")
+    fmt.Println("\033[1;32m => \033[;m-d\033[1;32m, \033[;m--daemon \033[1;32m=> \033[;mRuns in background.")
     fmt.Println("")
     fmt.Println("\033[1;32m---====================---")
     fmt.Println("\033[1;32m => \033[;mAlso see \033[1;37mabstouch.1 \033[;mfor examples and more.")
