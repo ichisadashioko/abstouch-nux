@@ -40,7 +40,7 @@ func Start(args ...string) (err error) {
 func main() {
   args := os.Args[1:]
 
-  start_command := "/usr/share/abstouch-nux/test"
+  start_command := "/usr/share/abstouch-nux/input"
 
   var option_args, other_args []string
   for i := 0; i < len(args); i++ {
