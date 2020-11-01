@@ -3,11 +3,44 @@ package main
 import (
   "fmt"
   "os"
+  "os/exec"
   "strings"
 )
 
+func Log(s string, b bool) {
+  if b {
+    fmt.Printf(s)
+  }
+}
+
+func StartDaemon(args ...string) (p *os.Process, err error) {
+  if args[0], err = exec.LookPath(args[0]); err == nil {
+    var procAttr os.ProcAttr
+    procAttr.Files = []*os.File{os.Stdin,
+      os.Stdout, os.Stderr}
+    p, err := os.StartProcess(args[0], args, &procAttr)
+    if err == nil {
+      return p, nil
+    }
+  }
+  return nil, err
+}
+
+func Start(args ...string) (err error) {
+  if args[0], err = exec.LookPath(args[0]); err == nil {
+    cmd := exec.Command(args[0])
+    cmd.Stdout = os.Stdout
+    cmd.Stderr = os.Stderr
+    cmd.Run()
+    return nil
+  }
+  return err
+}
+
 func main() {
   args := os.Args[1:]
+
+  start_command := ""
 
   var option_args, other_args []string
   for i := 0; i < len(args); i++ {
@@ -39,6 +72,15 @@ func main() {
     }
   }
 
+  var quiet, daemon bool
+  for i := 0; i < len(options); i++ {
+    if options[i] == "q" || options[i] == "quiet" {
+      quiet = true
+    } else if options[i] == "d" || options[i] == "daemon" {
+      daemon = true
+    }
+  }
+
   command := strings.ToLower(other_args[0])
   if command == "help" {
     fmt.Println("\033[1;32m---====\033[1;37mabstouch-nux\033[1;32m====---")
@@ -47,7 +89,7 @@ func main() {
     fmt.Println("\033[1;32m---======\033[1;37mCommands\033[1;32m======---")
     fmt.Println("\033[1;32m => \033[;mhelp \033[1;32m=> \033[;mShows this text.")
     fmt.Println("\033[1;32m => \033[;mstart \033[1;32m=> \033[;mStarts abstouch-nux.")
-    fmt.Println("\033[1;32m => \033[;mstop \033[1;32m=> \033[;mTerminates abstouch-nux.")
+    fmt.Println("\033[1;32m => \033[;mstop \033[1;32m=> \033[;mTerminates abstouch-nux daemon.")
     fmt.Println("")
     fmt.Println("\033[1;32m---=======\033[1;37mOptions\033[1;32m======---")
     fmt.Println("\033[1;32m => \033[;m-q\033[1;32m, \033[;m--quiet \033[1;32m=> \033[;mDisables output except err.")
@@ -59,12 +101,29 @@ func main() {
   }
 
   if command == "start" {
-    fmt.Println("\033[1;31m => Not implemented yet!")
-    os.Exit(1)
+    if !daemon {
+      Log("\033[1;32m => \033[;mStarting abstouch-nux...\n", !quiet)
+      if err := Start(start_command); err != nil {
+        fmt.Println("\033[1;31m => \033[;mStarting abstouch-nux... Failed!")
+        fmt.Println(err)
+        os.Exit(1)
+      }
+    } else {
+      Log("\033[1;32m => \033[;mStarting abstouch-nux...\r", !quiet)
+      if _, err := StartDaemon(start_command); err == nil {
+        Log("\033[1;32m => \033[;mStarting abstouch-nux... Success!\n", !quiet)
+      } else {
+        fmt.Println("\033[1;31m => \033[;mStarting abstouch-nux... Failed!")
+        fmt.Println(err)
+        os.Exit(1)
+      }
+    }
+
+    os.Exit(0)
   }
 
   if command == "stop" {
-    fmt.Println("\033[1;31m => Not implemented yet!")
+    fmt.Println("\033[1;31m => \033[1;37mNot implemented yet!\033[;m")
     os.Exit(1)
   }
 
