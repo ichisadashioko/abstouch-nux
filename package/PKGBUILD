@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/acedron/${pkgname}"
 license=('MIT')
 makedepends=(
-  'go'
+  'rust'
   'gcc'
 )
 source=("${pkgname}-${pkgver}.tar.xz::${url}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.xz")

@@ -16,6 +16,13 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
-int main(int argc, char *argv[]) {
-  return 0;
+int main(int argc, char *argv[])
+{
+    int verbose = 0;
+    char *verarg = "-v";
+    for (int i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i], "-v") == 0)
+            verbose = 1;
+    }
 }
