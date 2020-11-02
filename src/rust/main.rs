@@ -96,9 +96,16 @@ fn main()
     }
     else if command == "start"
     {
+        let mut args = vec![];
+        if !daemon
+        {
+            args.push("-v");
+        }
+
         log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
         let result = panic::catch_unwind(|| {
             let mut command = process::Command::new("/usr/share/abstouch-nux/input")
+                .args(args)
                 .spawn()
                 .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
             if daemon
