@@ -16,6 +16,10 @@ fn log(s: String, b: bool)
 
 fn main()
 {
+    let input_bin = vec!["abstouch-nux-input", "/usr/share/abstouch-nux/bin/abstouch-nux-input"];
+    let set_event_bin = vec!["abstouch-nux-set_event", "/usr/share/abstouch-nux/bin/abstouch-nux-set_event"];
+    let main_bin = input_bin;
+
     let s = System::new_all();
     panic::set_hook(Box::new(|_info| {}));
 
@@ -87,13 +91,14 @@ fn main()
         println!("\x1b[1;32m => \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows this text.");
         println!("\x1b[1;32m => \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.");
         println!("\x1b[1;32m => \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.");
+        println!("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.");
         println!("");
         println!("\x1b[1;32m---=======\x1b[1;37mOptions\x1b[1;32m======---");
         println!("\x1b[1;32m => \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.");
         println!("\x1b[1;32m => \x1b[;m-d\x1b[1;32m, \x1b[;m--daemon \x1b[1;32m=> \x1b[;mRuns in background.");
         println!("");
         println!("\x1b[1;32m---====================---");
-        println!("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;mfor examples and more.");
+        println!("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;m man page for examples and more.");
         process::exit(0);
     }
     else if command == "start"
@@ -104,7 +109,7 @@ fn main()
             args.push("-v");
         }
 
-        if s.get_process_by_name("abstouch-nux-input").len() > 0
+        if s.get_process_by_name(main_bin[0]).len() > 0
         {
             println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");
             process::exit(1);
@@ -113,7 +118,7 @@ fn main()
         {
             log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
             let result = panic::catch_unwind(|| {
-                let mut command = process::Command::new("/usr/share/abstouch-nux/input")
+                let mut proc = process::Command::new(main_bin[1])
                     .args(args)
                     .spawn()
                     .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
@@ -124,7 +129,7 @@ fn main()
                 else
                 {
                     log(String::from("\n"), quiet);
-                    command.wait()
+                    proc.wait()
                         .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
                 }
             });
@@ -137,7 +142,7 @@ fn main()
     }
     else if command == "stop"
     {
-        let proc_arr = s.get_process_by_name("abstouch-nux-input");
+        let proc_arr = s.get_process_by_name(main_bin[0]);
         if proc_arr.len() > 0
         {
             for proc in proc_arr
@@ -152,6 +157,21 @@ fn main()
             println!("\x1b[1;31m => \x1b[;mNo abstouch-nux daemon found!");
             process::exit(1);
         }
+    }
+    else if command == "setevent"
+    {
+        let result = panic::catch_unwind(|| {
+            let mut proc = process::Command::new(set_event_bin[1])
+                .spawn()
+                .expect("\x1b[1;31m => \x1b[;mAn error occured!");
+            proc.wait()
+                .expect("\x1b[1;31m => \x1b[;mAn error occured!");
+        });
+
+        match result {
+            Ok(res) => res,
+            Err(_) => println!("\x1b[1;31m => \x1b[;mAn error occured!")
+        };
     }
     else
     {
