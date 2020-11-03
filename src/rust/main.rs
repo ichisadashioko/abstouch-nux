@@ -16,12 +16,12 @@ fn log(s: String, b: bool)
 
 fn main()
 {
+    let s = System::new_all();
+    panic::set_hook(Box::new(|_info| {}));
+
     let input_bin = vec!["abstouch-nux-input", "/usr/share/abstouch-nux/bin/abstouch-nux-input"];
     let set_event_bin = vec!["abstouch-nux-set_event", "/usr/share/abstouch-nux/bin/abstouch-nux-set_event"];
     let main_bin = input_bin;
-
-    let s = System::new_all();
-    panic::set_hook(Box::new(|_info| {}));
 
     let mut args: Vec<String> = env::args().collect();
     let (mut option_args, mut other_args) = (vec![], vec![]);
@@ -137,7 +137,7 @@ fn main()
             match result {
                 Ok(res) => res,
                 Err(_) => println!("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!")
-            };
+            }
         }
     }
     else if command == "stop"
@@ -171,7 +171,7 @@ fn main()
         match result {
             Ok(res) => res,
             Err(_) => println!("\x1b[1;31m => \x1b[;mAn error occured!")
-        };
+        }
     }
     else
     {

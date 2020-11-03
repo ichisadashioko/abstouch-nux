@@ -70,10 +70,12 @@ int main(int argc, char *argv[])
             break;
     }
 
+    printf("\x1b[1;31m => \x1b[;mCouldn't set event!\n");
+
     FILE *fp = fopen("/usr/share/abstouch-nux/event.conf", "w");
     fprintf(fp, "%d", event);
     fclose(fp);
 
-    printf("\x1b[1;32m => \x1b[;mSuccessfully set event id as \x1b[1;37m%d\x1b[;m.", event);
+    printf("\x1b[A\x1b[2K\x1b[1;32m => \x1b[;mSuccessfully set event id as \x1b[1;37m%d\x1b[;m.\n", event);
     return 0;
 }
