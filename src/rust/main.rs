@@ -3,6 +3,7 @@ use std::env;
 use std::panic;
 use std::process;
 use std::io::Write;
+use sysinfo::{Signal, System, SystemExt, ProcessExt};
 
 fn log(s: String, b: bool)
 {
@@ -15,6 +16,7 @@ fn log(s: String, b: bool)
 
 fn main()
 {
+    let s = System::new_all();
     panic::set_hook(Box::new(|_info| {}));
 
     let mut args: Vec<String> = env::args().collect();
@@ -102,33 +104,54 @@ fn main()
             args.push("-v");
         }
 
-        log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
-        let result = panic::catch_unwind(|| {
-            let mut command = process::Command::new("/usr/share/abstouch-nux/input")
-                .args(args)
-                .spawn()
-                .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
-            if daemon
-            {
-                log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux... Success!\n"), quiet);
-            }
-            else
-            {
-                log(String::from("\n"), quiet);
-                command.wait()
+        if s.get_process_by_name("abstouch-nux-input").len() > 0
+        {
+            println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");
+            process::exit(1);
+        }
+        else
+        {
+            log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
+            let result = panic::catch_unwind(|| {
+                let mut command = process::Command::new("/usr/share/abstouch-nux/input")
+                    .args(args)
+                    .spawn()
                     .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
-            }
-        });
+                if daemon
+                {
+                    log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux... Success.\n"), quiet);
+                }
+                else
+                {
+                    log(String::from("\n"), quiet);
+                    command.wait()
+                        .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
+                }
+            });
 
-        match result {
-            Ok(res) => res,
-            Err(_) => println!("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!")
-        };
+            match result {
+                Ok(res) => res,
+                Err(_) => println!("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!")
+            };
+        }
     }
     else if command == "stop"
     {
-        println!("\x1b[1;31m => \x1b[1;37mNot implemented yet!\x1b[;m");
-        process::exit(1);
+        let proc_arr = s.get_process_by_name("abstouch-nux-input");
+        if proc_arr.len() > 0
+        {
+            for proc in proc_arr
+            {
+                proc.kill(Signal::Term);
+            }
+            println!("\x1b[1;32m => \x1b[;mSuccessfully terminated abstouch-nux daemon.");
+            process::exit(0);
+        }
+        else
+        {
+            println!("\x1b[1;31m => \x1b[;mNo abstouch-nux daemon found!");
+            process::exit(1);
+        }
     }
     else
     {

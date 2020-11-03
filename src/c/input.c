@@ -19,7 +19,6 @@
 int main(int argc, char *argv[])
 {
     int verbose = 0;
-    char *verarg = "-v";
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "-v") == 0)
