@@ -1,0 +1,47 @@
+'\ t
+.TH "abstouch-nux" "1" "2020\-10\-07" "abstouch-nux" "abstouch-nux Manual"
+.nh
+.ad l
+.SH NAME
+abstouch-nux \- An absolute touchpad input client for GNU/Linux.
+
+.SH SYNOPSIS
+\fIabstouch\fR <command> [options]
+
+.SH DESCRIPTION
+abstouch-nux is an absolute touchpad input client for GNU/Linux.
+
+.SH COMMANDS
+.TP
+.B help
+Shows help text.
+
+.TP
+.B start
+Starts abstouch-nux.
+
+.TP
+.B stop
+Terminates abstouch-nux daemon.
+
+.TP
+.B setevent
+Set event to match touchpad.
+
+.SH OPTIONS
+.TP
+.B \-q, \-\-quiet
+Disables output except err.
+
+.TP
+.B \-d, \-\-daemon
+Runs in background.
+
+.SH EXAMPLES
+.B abstouch stop
+
+.B abstouch setevent
+
+.B abstouch start -dq
+
+.B abstouch start --daemon

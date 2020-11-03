@@ -89,7 +89,7 @@ fn main()
         println!("\x1b[1;32m => \x1b[1;37mUsage: \x1b[;mabstouch <command> [options]");
         println!("");
         println!("\x1b[1;32m---======\x1b[1;37mCommands\x1b[1;32m======---");
-        println!("\x1b[1;32m => \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows this text.");
+        println!("\x1b[1;32m => \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows help text.");
         println!("\x1b[1;32m => \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.");
         println!("\x1b[1;32m => \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.");
         println!("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.");
@@ -99,7 +99,7 @@ fn main()
         println!("\x1b[1;32m => \x1b[;m-d\x1b[1;32m, \x1b[;m--daemon \x1b[1;32m=> \x1b[;mRuns in background.");
         println!("");
         println!("\x1b[1;32m---====================---");
-        println!("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;m man page for examples and more.");
+        println!("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;mman page for examples and more.");
         process::exit(0);
     }
     else if command == "start"
