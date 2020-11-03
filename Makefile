@@ -10,4 +10,4 @@ build: src/rust/main.rs
 .PHONY: install
 install:
 	install -Dm 755 "${THIS_DIR}/build/abstouch" "${PREFIX}/bin/abstouch"
-	install -Dm 755 "${THIS_DIR}/build/input" "${PREFIX}/share/abstouch-nux/input"
+	install -Dm 755 "${THIS_DIR}/build/input" "${PREFIX}/share/abstouch-nux/abstouch-nux-input"
