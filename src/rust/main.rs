@@ -1,4 +1,5 @@
 use std::io;
+use std::fs;
 use std::env;
 use std::panic;
 use std::process;
@@ -103,41 +104,53 @@ fn main()
     }
     else if command == "start"
     {
-        let mut args = vec![];
-        if !daemon
-        {
-            args.push("-v");
-        }
-
-        if s.get_process_by_name(main_bin[0]).len() > 0
-        {
-            println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");
-            process::exit(1);
-        }
-        else
-        {
-            log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
-            let result = panic::catch_unwind(|| {
-                let mut proc = process::Command::new(main_bin[1])
-                    .args(args)
-                    .spawn()
-                    .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
-                if daemon
+        let result = panic::catch_unwind(|| {
+            let event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
+                .expect("\x1b[1;31m => Couldn't read event.conf!");
+            if event_contents == "-1" || event_contents == "-1\n"
+            {
+                println!("\x1b[1;31m => \x1b[;mInvalid event!");
+                println!("\x1b[1;32m => \x1b[;mUse: abstouch setevent");
+                process::exit(1);
+            }
+            else
+            {
+                let mut args = vec![];
+                if !daemon
                 {
-                    log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux... Success.\n"), quiet);
+                    args.push("-v");
+                }
+
+                if s.get_process_by_name(main_bin[0]).len() > 0
+                {
+                    println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");
+                    process::exit(1);
                 }
                 else
                 {
-                    log(String::from("\n"), quiet);
-                    proc.wait()
-                        .expect("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!");
-                }
-            });
+                    log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
 
-            match result {
-                Ok(res) => res,
-                Err(_) => println!("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!")
+                    let mut proc = process::Command::new(main_bin[1])
+                        .args(args)
+                        .spawn()
+                        .unwrap();
+                    if daemon
+                    {
+                        log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux... Success.\n"), quiet);
+                    }
+                    else
+                    {
+                        log(String::from("\n"), quiet);
+                        proc.wait()
+                            .unwrap();
+                    }
+                }
             }
+        });
+
+        match result {
+            Ok(res) => res,
+            Err(_) => println!("\x1b[1;31m => \x1b[;mStarting abstouch-nux... Failed!")
         }
     }
     else if command == "stop"
@@ -163,9 +176,9 @@ fn main()
         let result = panic::catch_unwind(|| {
             let mut proc = process::Command::new(set_event_bin[1])
                 .spawn()
-                .expect("\x1b[1;31m => \x1b[;mAn error occured!");
+                .unwrap();
             proc.wait()
-                .expect("\x1b[1;31m => \x1b[;mAn error occured!");
+                .unwrap();
         });
 
         match result {
