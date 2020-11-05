@@ -109,8 +109,8 @@ fn main()
                 .expect("\x1b[1;31m => Couldn't read event.conf!");
             if event_contents == "-1" || event_contents == "-1\n"
             {
-                println!("\x1b[1;31m => \x1b[;mInvalid event!");
-                println!("\x1b[1;32m => \x1b[;mUse: abstouch setevent");
+                println!("\x1b[1;31m => \x1b[;mEvent not set!");
+                println!("\x1b[1;32m => \x1b[;mTry using: \x1b[1;32m`\x1b[;mabstouch setevent\x1b[1;32m`\x1b[;m");
                 process::exit(1);
             }
             else

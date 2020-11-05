@@ -9,9 +9,13 @@
 #include <stdlib.h>
 #include <dirent.h>
 
+#define DEV_INPUT_DIR "/dev/input"
+#define EVENT_PREFIX "event"
+#define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
+
 static int is_event_device(const struct dirent *dir)
 {
-    return strncmp("event", dir->d_name, 5) == 0;
+    return strncmp(EVENT_PREFIX, dir->d_name, 5) == 0;
 }
 
 static int scan_devices(void)
@@ -21,11 +25,9 @@ static int scan_devices(void)
     char *filename;
     int max_device = 0;
 
-    ndev = scandir("/dev/input", &namelist, is_event_device, versionsort);
+    ndev = scandir(DEV_INPUT_DIR, &namelist, is_event_device, versionsort);
     if (ndev < 1)
-    {
         return -1;
-    }
 
     printf("\x1b[1;32m => \x1b[1;37mEvents:\n");
     for (i = 0; i < ndev; i++)
@@ -35,7 +37,7 @@ static int scan_devices(void)
         char name[256] = "\x1b[1;31mUnknown\x1b[;m";
 
         snprintf(fname, sizeof(fname),
-			 "%s/%s", "/dev/input", namelist[i]->d_name);
+			 "%s/%s", DEV_INPUT_DIR, namelist[i]->d_name);
 		fd = open(fname, O_RDONLY);
 		if (fd < 0)
 			continue;
@@ -59,6 +61,13 @@ int main(int argc, char *argv[])
     int event;
     int max_input = scan_devices();
 
+    if (max_input < 0)
+    {
+        printf("\x1b[1;31m => \x1b[;mNo event found!\n");
+        printf("\x1b[1;32m => \x1b[;mTry running as root.\n");
+        return EXIT_FAILURE;
+    }
+
     printf("\x1b[1;32m => \x1b[1;37mEnter your event's id\x1b[1;32m (\x1b[;m0\x1b[1;32m-\x1b[;m%d\x1b[1;32m): \x1b[;m", max_input);
     char *p, s[100];
     while (fgets(s, sizeof(s), stdin))
@@ -72,10 +81,10 @@ int main(int argc, char *argv[])
 
     printf("\x1b[1;31m => \x1b[;mCouldn't set event!\n");
 
-    FILE *fp = fopen("/usr/share/abstouch-nux/event.conf", "w");
+    FILE *fp = fopen(EVENT_CONF_PATH, "w");
     fprintf(fp, "%d", event);
     fclose(fp);
 
     printf("\x1b[A\x1b[2K\x1b[1;32m => \x1b[;mSuccessfully set event id as \x1b[1;37m%d\x1b[;m.\n", event);
-    return 0;
+    return EXIT_SUCCESS;
 }
