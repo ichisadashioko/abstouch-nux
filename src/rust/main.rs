@@ -121,6 +121,9 @@ fn main()
                     args.push("-v");
                 }
 
+                let eventarg = "-event".to_owned() + &event_contents[..];
+                args.push(&eventarg[..]);
+
                 if s.get_process_by_name(main_bin[0]).len() > 0
                 {
                     println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");

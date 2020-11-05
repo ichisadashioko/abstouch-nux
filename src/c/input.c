@@ -17,12 +17,29 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+static void shift_string(char *str, size_t n)
+{
+    size_t len = strlen(str);
+    if (n > len)
+        return;
+    memmove(str, str + n, len - n + 1);
+}
+
 int main(int argc, char *argv[])
 {
-    int verbose = 0;
+    int verbose = 0, event = 0;
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "-v") == 0)
             verbose = 1;
+
+        if (strncmp(argv[i], "-event", strlen("-event")) == 0)
+        {
+            char *p, *eventstr = argv[i];
+            shift_string(eventstr, 6);
+            event = strtol(eventstr, &p, 10);
+        }
     }
+
+    printf(" => input.c\n => Verbose: %d\n => Event: %d\n", verbose, event);
 }
