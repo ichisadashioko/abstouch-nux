@@ -110,13 +110,14 @@ fn main()
             if event_contents == "-1" || event_contents == "-1\n"
             {
                 println!("\x1b[1;31m => \x1b[;mEvent not set!");
-                println!("\x1b[1;32m => \x1b[;mTry using: \x1b[1;32m`\x1b[;mabstouch setevent\x1b[1;32m`\x1b[;m");
+                println!("\x1b[1;32m => \x1b[;mTry using the following command:");
+                println!("\x1b[1;32m => \x1b[;mabstouch setevent");
                 process::exit(1);
             }
             else
             {
                 let mut args = vec![];
-                if !daemon
+                if !daemon && !quiet
                 {
                     args.push("-v");
                 }
