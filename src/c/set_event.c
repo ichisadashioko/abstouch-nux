@@ -37,20 +37,20 @@ static int scan_devices(void)
         char name[256] = "\x1b[1;31mUnknown\x1b[;m";
 
         snprintf(fname, sizeof(fname),
-			 "%s/%s", DEV_INPUT_DIR, namelist[i]->d_name);
-		fd = open(fname, O_RDONLY);
-		if (fd < 0)
-			continue;
-		ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+            "%s/%s", DEV_INPUT_DIR, namelist[i]->d_name);
+        fd = open(fname, O_RDONLY);
+        if (fd < 0)
+            continue;
+        ioctl(fd, EVIOCGNAME(sizeof(name)), name);
 
-		printf("\x1b[1;32m   => \x1b[1;37m%s \x1b[1;32m=> \x1b[;m%s\n", fname, name);
-		close(fd);
+        printf("\x1b[1;32m   => \x1b[1;37m%s \x1b[1;32m=> \x1b[;m%s\n", fname, name);
+        close(fd);
 
-		sscanf(namelist[i]->d_name, "event%d", &devnum);
-		if (devnum > max_device)
-			max_device = devnum;
+        sscanf(namelist[i]->d_name, "event%d", &devnum);
+        if (devnum > max_device)
+            max_device = devnum;
 
-		free(namelist[i]);
+        free(namelist[i]);
     }
 
     return max_device;
