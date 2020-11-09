@@ -22,6 +22,7 @@ fn main()
 
     let input_bin = vec!["abstouch-nux-input", "/usr/share/abstouch-nux/bin/abstouch-nux-input"];
     let set_event_bin = vec!["abstouch-nux-set_event", "/usr/share/abstouch-nux/bin/abstouch-nux-set_event"];
+    let set_offset_bin = vec!["abstouch-nux-set_offset", "/usr/share/abstouch-nux/bin/abstouch-nux-set_offset"];
     let main_bin = input_bin;
 
     let mut args: Vec<String> = env::args().collect();
@@ -93,6 +94,7 @@ fn main()
         println!("\x1b[1;32m => \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.");
         println!("\x1b[1;32m => \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.");
         println!("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.");
+        println!("\x1b[1;32m => \x1b[;msetoffset \x1b[1;32m=> \x1b[;mSet cursor offset to match your touchpad.");
         println!("");
         println!("\x1b[1;32m---=======\x1b[1;37mOptions\x1b[1;32m======---");
         println!("\x1b[1;32m => \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.");
@@ -107,6 +109,10 @@ fn main()
         let result = panic::catch_unwind(|| {
             let event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
                 .expect("\x1b[1;31m => Couldn't read event.conf!");
+            let xoff_contents = fs::read_to_string("/usr/share/abstouch-nux/xoff.conf")
+                .expect("\x1b[1;31m => Couldn't read xoff.conf!");
+            let yoff_contents = fs::read_to_string("/usr/share/abstouch-nux/yoff.conf")
+                .expect("\x1b[1;31m => Couldn't read yoff.conf!");
             if event_contents == "-1" || event_contents == "-1\n"
             {
                 println!("\x1b[1;31m => \x1b[;mEvent not set!");
@@ -123,7 +129,11 @@ fn main()
                 }
 
                 let eventarg = "-event".to_owned() + &event_contents[..];
+                let xoffarg = "-xoff".to_owned() + &xoff_contents[..];
+                let yoffarg = "-yoff".to_owned() + &yoff_contents[..];
                 args.push(&eventarg[..]);
+                args.push(&xoffarg[..]);
+                args.push(&yoffarg[..]);
 
                 if s.get_process_by_name(main_bin[0]).len() > 0
                 {
@@ -179,6 +189,21 @@ fn main()
     {
         let result = panic::catch_unwind(|| {
             let mut proc = process::Command::new(set_event_bin[1])
+                .spawn()
+                .unwrap();
+            proc.wait()
+                .unwrap();
+        });
+
+        match result {
+            Ok(res) => res,
+            Err(_) => println!("\x1b[1;31m => \x1b[;mAn error occured!")
+        }
+    }
+    else if command == "setoffset"
+    {
+        let result = panic::catch_unwind(|| {
+            let mut proc = process::Command::new(set_offset_bin[1])
                 .spawn()
                 .unwrap();
             proc.wait()

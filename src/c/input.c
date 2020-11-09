@@ -9,6 +9,9 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"
 
@@ -133,6 +136,10 @@ static const char * const * const names[EV_MAX + 1] = {
     [EV_ABS] = absolutes
 };
 
+static Display *dpy;
+static Window root_window;
+static XWindowAttributes xw_attrs;
+
 static inline const char* typename(unsigned int type)
 {
     return (type <= EV_MAX && events[type]) ? events[type] : "?";
@@ -143,7 +150,21 @@ static inline const char* codename(unsigned int type, unsigned int code)
     return (type <= EV_MAX && code <= maxval[type] && names[type] && names[type][code]) ? names[type][code] : "?";
 }
 
-static int print_events(int fd, int verbose)
+static void map_input_to_display(int *xval, int xmin, int xmax,
+    int *yval, int ymin, int ymax)
+{
+    *xval = (*xval - xmin) / ((xmax - xmin) / xw_attrs.width);
+    *yval = (*yval - ymin) / ((ymax - ymin) / xw_attrs.height);
+}
+
+static void apply_cursor_position(int x, int y)
+{
+    XSelectInput(dpy, root_window, KeyReleaseMask);
+    XWarpPointer(dpy, None, root_window, 0, 0, 0, 0, x, y);
+    XFlush(dpy);
+}
+
+static int input_to_display(int fd, int verbose, int xoff, int yoff)
 {
     struct input_event ev[64];
     int i, rd;
@@ -161,10 +182,20 @@ static int print_events(int fd, int verbose)
 
         if (rd < (int) sizeof(struct input_event))
         {
-            perror("\n\x1b[1;31m => \x1b[;mError reading input!\n");
+            printf("\n\x1b[1;31m => \x1b[;mError reading input!\n");
             printf("\x1b[1;32m => \x1b[;mExpected \x1b[1;37m%d\x1b[;m bytes, got \x1b[1;37m%d\n", (int) sizeof(struct input_event), rd);
             return EXIT_FAILURE;
         }
+
+        int xmin, xmax, ymin, ymax;
+
+        int absx[6] = {0}, absy[6] = {0};
+        ioctl(fd, EVIOCGABS(ABS_X), absx);
+        ioctl(fd, EVIOCGABS(ABS_Y), absy);
+        xmin = absx[1];
+        xmax = absx[2];
+        ymin = absy[1];
+        ymax = absy[2];
 
         for (i = 0; i < rd / sizeof(struct input_event); i++)
         {
@@ -172,13 +203,23 @@ static int print_events(int fd, int verbose)
             type = ev[i].type;
             code = ev[i].code;
 
-            if (type != EV_SYN && verbose == 1)
-            {
-                printf("  \x1b[1;32m - \x1b[;mType %s\x1b[1;32m/\x1b[;m%d \x1b[1;32m- \x1b[;mcode %s\x1b[1;32m/\x1b[;m%d",
-                    typename(type), type, codename(type, code), code);
-                if (type != EV_MSC && (code != MSC_RAW || code != MSC_SCAN))
-                    printf("\x1b[1;32m - \x1b[;mValue %d\n", ev[i].value);
-            }
+
+            if (type != EV_ABS)
+                continue;
+
+            int xval, yval;
+            if (code == 0)
+                xval = ev[i].value;
+            else if (code == 1)
+                yval = ev[i].value;
+
+            int cx = xval, cy = yval;
+            map_input_to_display(&cx, xmin, xmax, &cy, ymin, ymax);
+            cx += xoff;
+            cy += yoff;
+            apply_cursor_position(cx, cy);
+            if (verbose == 1)
+                printf("\x1b[A\x1b[K\x1b[1;32m   - \x1b[;mMoved cursor to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", cx, cy);
         }
     }
 
@@ -209,6 +250,8 @@ static int is_abs_device(int fd)
 int main(int argc, char *argv[])
 {
     int verbose = 0, event = 0;
+    int xoff = 0, yoff = 0;
+    char *p;
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "-v") == 0)
@@ -216,9 +259,23 @@ int main(int argc, char *argv[])
 
         if (strncmp(argv[i], "-event", 6) == 0)
         {
-            char *p, *eventstr = argv[i];
+            char *eventstr = argv[i];
             shift_string(eventstr, 6);
             event = strtol(eventstr, &p, 10);
+        }
+
+        if (strncmp(argv[i], "-xoff", 5) == 0)
+        {
+            char *xoffstr = argv[i];
+            shift_string(xoffstr, 5);
+            xoff = strtol(xoffstr, &p, 10);
+        }
+
+        if (strncmp(argv[i], "-yoff", 5) == 0)
+        {
+            char *yoffstr = argv[i];
+            shift_string(yoffstr, 5);
+            yoff = strtol(yoffstr, &p, 10);
         }
     }
 
@@ -237,5 +294,11 @@ int main(int argc, char *argv[])
     }
 
     logstr("Found absolute input on event.", verbose);
-    return print_events(fd, verbose);
+    logstr("", verbose);
+
+    dpy = XOpenDisplay(0);
+    root_window = XRootWindow(dpy, 0);
+    XGetWindowAttributes(dpy, root_window, &xw_attrs);
+
+    return input_to_display(fd, verbose, xoff, yoff);
 }
