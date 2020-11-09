@@ -7,7 +7,12 @@ Originally started as an [evtest](https://github.com/freedesktop-unofficial-mirr
 
 ## Installation
 
-**Still editing...**
+### Arch Linux (Manjaro etc.)
+Available as `abstouch-nux` AUR [package](https://aur.archlinux.org/packages/abstouch-nux/).
+
+```bash
+yay -S abstouch-nux
+```
 
 ## Usage
 
