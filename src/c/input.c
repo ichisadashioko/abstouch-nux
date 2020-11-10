@@ -375,6 +375,14 @@ int main(int argc, char *argv[])
              "%s/%s%d", DEV_INPUT_DIR, EVENT_PREFIX, event);
         fd = open(fname, O_RDONLY);
 
+        if (is_abs_device(fd) == 0)
+        {
+            printf("\x1b[1;31m => \x1b[;mPast event doesn't have absolute input!\n");
+            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+            return EXIT_FAILURE;
+        }
+
         fp = fopen(EVENT_CONF_PATH, "w");
         fprintf(fp, "%d", event);
         fclose(fp);
