@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
     if (verbose == 1) {
       printf("  \x1b[1;32m - \x1b[;mFound absolute input on event \x1b[1;37m%d\x1b[;m.\n", event);
       printf("  \x1b[1;32m - \x1b[;mSet offset to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", xoff, yoff);
-      printf("\n");
+      printf("  \x1b[1;32m - \x1b[;mWaiting for input...\n");
     }
 
     dpy = XOpenDisplay(0);

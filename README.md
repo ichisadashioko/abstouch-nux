@@ -11,7 +11,15 @@ Originally started as an [evtest](https://github.com/freedesktop-unofficial-mirr
 Available as `abstouch-nux` AUR [package](https://aur.archlinux.org/packages/abstouch-nux/).
 
 ```bash
-yay -S abstouch-nux
+$ yay -S abstouch-nux
+```
+
+### Debian (Ubuntu, Kali etc.)
+Available as a debian [package]().
+
+```bash
+$ wget $(curl -s https://api.github.com/repos/acedron/abstouch-nux/releases/latest | grep -o "http.*deb") -q --show-progress
+$ sudo dpkg -i abstouch-nux*.deb
 ```
 
 ## Usage
