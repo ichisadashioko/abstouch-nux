@@ -8,12 +8,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <dirent.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"
+#define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
+#define ENAME_CONF_PATH "/usr/share/abstouch-nux/ename.conf"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -239,12 +242,48 @@ static int is_abs_device(int fd)
     {
         if (test_bit(type, bit[0]) && type != EV_REP)
         {
-            if (type == 3)
+            if (type == EV_ABS)
                 return 1;
         }
     }
 
     return 0;
+}
+
+static int is_event_device(const struct dirent *dir)
+{
+    return strncmp(EVENT_PREFIX, dir->d_name, 5) == 0;
+}
+
+static int get_event_by_name(char *ename)
+{
+    struct dirent **namelist;
+    int i, ndev, devnum;
+    char *filename;
+    int max_device = 0;
+
+    ndev = scandir(DEV_INPUT_DIR, &namelist, is_event_device, versionsort);
+    if (ndev < 1)
+        return -1;
+
+    for (i = 0; i < ndev; i++)
+    {
+        char fname[64];
+        int fd = -1;
+        char name[256] = "\x1b[1;31mUnknown\x1b[;m";
+
+        snprintf(fname, sizeof(fname),
+            "%s/%s", DEV_INPUT_DIR, namelist[i]->d_name);
+        fd = open(fname, O_RDONLY);
+        if (fd < 0)
+            continue;
+        ioctl(fd, EVIOCGNAME(sizeof(name)), name);
+        close(fd);
+        free(namelist[i]);
+
+        if (strcmp(ename, name) == 0)
+            return i;
+    }
 }
 
 int main(int argc, char *argv[])
@@ -289,10 +328,64 @@ int main(int argc, char *argv[])
 
     if (is_abs_device(fd) == 0)
     {
-        printf("\x1b[1;31m => \x1b[;mEvent \x1b[1;37m%d \x1b[;mhas no absolute input!\n", event);
-        printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
-        printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
-        return EXIT_FAILURE;
+        if (verbose == 1)
+        {
+            printf("\x1b[1;31m => \x1b[;mEvent \x1b[1;37m%d \x1b[;mhas no absolute input!\n", event);
+            printf("\x1b[1;32m => \x1b[;mChecking for past events.\n");
+        }
+
+        char *buffer;
+        long length;
+        FILE *fp = fopen(ENAME_CONF_PATH, "rb");
+
+        fseek(fp, 0, SEEK_END);
+        length = ftell(fp);
+        fseek(fp, 0, SEEK_SET);
+        buffer = malloc(length + 1);
+        if (buffer)
+            fread(buffer, 1, length, fp);
+        fclose(fp);
+        buffer[length] = '\0';
+
+        if (strcmp(buffer, "") == 0)
+        {
+            printf("\x1b[1;32m => \x1b[;mNo past events found.\n");
+            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+            return EXIT_FAILURE;
+        }
+
+        int newevent = get_event_by_name(buffer);
+        if (newevent == -1)
+        {
+            printf("\x1b[1;32m => \x1b[;mCouldn't get new event from old event.\n");
+            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+            return EXIT_FAILURE;
+        }
+
+        if (verbose == 1)
+        {
+            printf("\x1b[1;32m => \x1b[;mFound moved past event \x1b[1;37m%d\x1b[;m.\n", newevent);
+            printf("\x1b[1;32m => \x1b[;mSetting event...\n");
+        }
+
+        event = newevent;
+        snprintf(fname, sizeof(fname),
+             "%s/%s%d", DEV_INPUT_DIR, EVENT_PREFIX, event);
+        fd = open(fname, O_RDONLY);
+
+        if (is_abs_device(fd) == 0)
+        {
+            printf("\x1b[1;31m => \x1b[;mPast event doesn't have absolute input!\n");
+            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+            return EXIT_FAILURE;
+        }
+
+        fp = fopen(EVENT_CONF_PATH, "w");
+        fprintf(fp, "%d", event);
+        fclose(fp);
     }
 
     if (verbose == 1) {
