@@ -345,7 +345,7 @@ int main(int argc, char *argv[])
         if (buffer)
             fread(buffer, 1, length, fp);
         fclose(fp);
-        buffer[length - 1] = '\0';
+        buffer[length] = '\0';
 
         if (strcmp(buffer, "") == 0)
         {
@@ -376,7 +376,7 @@ int main(int argc, char *argv[])
         fd = open(fname, O_RDONLY);
 
         fp = fopen(EVENT_CONF_PATH, "w");
-        fprintf(fp, "%d", newevent);
+        fprintf(fp, "%d", event);
         fclose(fp);
     }
 
