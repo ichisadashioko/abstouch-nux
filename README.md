@@ -30,7 +30,7 @@ $ sudo dpkg -i abstouch-nux*.deb
 $ git clone https://github.com/acedron/abstouch-nux.git
 $ cd abstouch-nux
 $ make -i build
-$ make -i install
+$ sudo make -i install
 ```
 
 ## Usage
