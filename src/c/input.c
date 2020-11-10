@@ -285,16 +285,21 @@ int main(int argc, char *argv[])
          "%s/%s%d", DEV_INPUT_DIR, EVENT_PREFIX, event);
     fd = open(fname, O_RDONLY);
 
+    logstr("Enabled verbose output.", verbose);
+
     if (is_abs_device(fd) == 0)
     {
-        printf("\x1b[1;31m => \x1b[;mEvent has no absolute input!\n");
+        printf("\x1b[1;31m => \x1b[;mEvent \x1b[1;37m%d \x1b[;mhas no absolute input!\n", event);
         printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
-        printf("\x1b[1;32m => \x1b[;mabstouch setevent\n");
+        printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
         return EXIT_FAILURE;
     }
 
-    logstr("Found absolute input on event.", verbose);
-    logstr("", verbose);
+    if (verbose == 1) {
+      printf("  \x1b[1;32m - \x1b[;mFound absolute input on event \x1b[1;37m%d\x1b[;m.\n", event);
+      printf("  \x1b[1;32m - \x1b[;mSet offset to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", xoff, yoff);
+      printf("\n");
+    }
 
     dpy = XOpenDisplay(0);
     root_window = XRootWindow(dpy, 0);
