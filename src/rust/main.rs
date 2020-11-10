@@ -108,11 +108,11 @@ fn main()
     {
         let result = panic::catch_unwind(|| {
             let event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
-                .expect("\x1b[1;31m => Couldn't read event.conf!");
+                .expect("\x1b[1;31m => \x1b[;mCouldn't read event.conf!");
             let xoff_contents = fs::read_to_string("/usr/share/abstouch-nux/xoff.conf")
-                .expect("\x1b[1;31m => Couldn't read xoff.conf!");
+                .expect("\x1b[1;31m => \x1b[;mCouldn't read xoff.conf!");
             let yoff_contents = fs::read_to_string("/usr/share/abstouch-nux/yoff.conf")
-                .expect("\x1b[1;31m => Couldn't read yoff.conf!");
+                .expect("\x1b[1;31m => \x1b[;mCouldn't read yoff.conf!");
             if event_contents == "-1" || event_contents == "-1\n"
             {
                 println!("\x1b[1;31m => \x1b[;mEvent not set!");

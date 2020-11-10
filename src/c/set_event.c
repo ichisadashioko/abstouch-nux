@@ -12,11 +12,14 @@
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"
 #define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
+#define ENAME_CONF_PATH "/usr/share/abstouch-nux/ename.conf"
 
 static int is_event_device(const struct dirent *dir)
 {
     return strncmp(EVENT_PREFIX, dir->d_name, 5) == 0;
 }
+
+static char device_names[256][257];
 
 static int scan_devices(void)
 {
@@ -44,6 +47,7 @@ static int scan_devices(void)
         ioctl(fd, EVIOCGNAME(sizeof(name)), name);
 
         printf("\x1b[1;32m   => \x1b[1;37m%s \x1b[1;32m=> \x1b[;m%s\n", fname, name);
+        strcpy(device_names[i], name);
         close(fd);
 
         sscanf(namelist[i]->d_name, "event%d", &devnum);
@@ -83,6 +87,10 @@ int main(int argc, char *argv[])
 
     FILE *fp = fopen(EVENT_CONF_PATH, "w");
     fprintf(fp, "%d", event);
+    fclose(fp);
+
+    fp = fopen(ENAME_CONF_PATH, "w");
+    fprintf(fp, "%s", device_names[event]);
     fclose(fp);
 
     printf("\x1b[A\x1b[2K\x1b[1;32m => \x1b[;mSuccessfully set event id as \x1b[1;37m%d\x1b[;m.\n", event);
