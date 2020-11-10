@@ -15,7 +15,7 @@ $ yay -S abstouch-nux
 ```
 
 ### Debian (Ubuntu, Kali etc.)
-Available as a debian [package](https://github.com/acedron/abstouch-nux/releases/latest).
+Available as `abstouch-nux` .deb [package](https://github.com/acedron/abstouch-nux/releases/latest).
 
 ```bash
 $ wget $(curl -s https://api.github.com/repos/acedron/abstouch-nux/releases/latest | grep -o "http.*deb") -q --show-progress
