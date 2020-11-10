@@ -1,5 +1,7 @@
 THIS_DIR=$(shell cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%N}}")" && pwd)
 
+PREFIX := "/usr"
+
 .PHONY: build
 build: src/rust/main.rs
 	cargo build

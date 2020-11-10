@@ -22,35 +22,46 @@ $ wget $(curl -s https://api.github.com/repos/acedron/abstouch-nux/releases/late
 $ sudo dpkg -i abstouch-nux*.deb
 ```
 
+### Building From Source
+
+**Not recommended.** Make sure you have `rust` and `gcc` installed.
+
+```bash
+$ git clone https://github.com/acedron/abstouch-nux.git
+$ cd abstouch-nux
+$ make -i build
+$ make -i install
+```
+
 ## Usage
 
 First, you have to set an input event.
 
 ```bash
-abstouch setevent
+$ abstouch setevent
 ```
 
 And then, you can start the client right away.
 
 ```bash
-abstouch start
+$ abstouch start
 ```
 
 You can run it on background if you use `--daemon` flag.
 
 ```bash
-abstouch start -d
+$ abstouch start -d
 ```
 
 You can set cursor offset to match your touchpad.
 
 ```bash
-abstouch setoffset
+$ abstouch setoffset
 ```
 
 See help or man page for more information.
 
 ```bash
-abstouch help
-man abstouch
+$ abstouch help
+$ man abstouch
 ```
