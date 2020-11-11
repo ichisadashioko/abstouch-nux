@@ -1,6 +1,7 @@
 THIS_DIR=$(shell cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%N}}")" && pwd)
 
 PREFIX := "/usr"
+PREFIX_ETC := "/etc"
 
 .PHONY: build
 build: src/rust/main.rs
@@ -26,5 +27,6 @@ install:
 	install -Dm 666 "${THIS_DIR}/build/ename.conf" "${PREFIX}/share/abstouch-nux/ename.conf"
 	install -Dm 666 "${THIS_DIR}/build/xoff.conf" "${PREFIX}/share/abstouch-nux/xoff.conf"
 	install -Dm 666 "${THIS_DIR}/build/yoff.conf" "${PREFIX}/share/abstouch-nux/yoff.conf"
-	@#Man Files
+	@#Man Files and Completions
 	install -Dm 755 "${THIS_DIR}/man/abstouch.1" "${PREFIX}/share/man/man1/abstouch.1"
+	install -Dm 755 "${THIS_DIR}/completion/abstouch-nux-completion.bash" "${PREFIX_ETC}/bash_completion.d/abstouch-nux-completion.bash"
