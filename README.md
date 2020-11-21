@@ -40,8 +40,8 @@ $ sudo dpkg -i abstouch-nux*.deb
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
 $ cd abstouch-nux
-$ make -i build
-$ sudo make -i install
+$ make build
+$ sudo make install
 ```
 
 You can then uninstall it with:
@@ -49,7 +49,7 @@ You can then uninstall it with:
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
 $ cd abstouch-nux
-$ sudo make -i uninstall
+$ sudo make uninstall
 ```
 
 ## Usage
