@@ -1,13 +1,15 @@
 #compdef abstouch
 
+local curcontext="$curcontext" state state_descr line
 typeset -A opt_args
+
 local rc=1
 
 _arguments -C -S \
-  {start}'[Starts the abstouch-nux client.]' \
-  {stop}'[Stops the abstouch-nux daemon if there is any.]' \
-  {help}'[Shows help text.]' \
-  {setevent}'[Sets the input event.]' \
-  {setoffset}'[Sets the offset for touchpad.]' && rc=0
+  'start[Starts the abstouch-nux client.]' \
+  'stop[Stops the abstouch-nux daemon if there is any.]' \
+  'help[Shows help text.]' \
+  'setevent[Sets the input event.]' \
+  'setoffset[Sets the offset for touchpad.]' && rc=0
 
 return rc
