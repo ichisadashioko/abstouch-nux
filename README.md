@@ -2,7 +2,7 @@
 <p align="center">
   <h1 align="center">abstouch-nux</h1>
   <h4 align="center">An absolute touchpad input client for GNU/Linux.</h4>
-  <h5 align="center">Inspired by [apsun/AbsoluteTouchEx](https://github.com/apsun/AbsoluteTouchEx). Make sure to check his repository, especially if you use Windows!</h5>
+  <h5 align="center">Inspired by <a href="https://github.com/apsun/AbsoluteTouchEx">apsun/AbsoluteTouchEx</a>. Make sure to check his repository, especially if you use Windows!</h5>
   <h6 align="center">
     <a href="https://aur.archlinux.org/packages/abstouch-nux" alt="License">
       <img src="https://img.shields.io/aur/license/abstouch-nux?style=for-the-badge"></a>
