@@ -1,9 +1,19 @@
 # abstouch-nux
-An absolute touchpad input client for GNU/Linux.
-Inspired by [apsun/AbsoluteTouchEx](https://github.com/apsun/AbsoluteTouchEx). <br/>
-Originally started as an [evtest](https://github.com/freedesktop-unofficial-mirror/evtest) mod. That means this repository uses code from it. <br/>
-<br/>
-**If you use Windows, check this awesome repository: [apsun/AbsoluteTouchEx](https://github.com/apsun/AbsoluteTouchEx)!**
+<p align="center">
+  <h1 align="center">abstouch-nux</h1>
+  <h4 align="center">An absolute touchpad input client for GNU/Linux.</h4>
+  <h5 align="center">Inspired by [apsun/AbsoluteTouchEx](https://github.com/apsun/AbsoluteTouchEx).</h5>
+  <h5 align="center">**If you use Windows, check this awesome repository: [apsun/AbsoluteTouchEx](https://github.com/apsun/AbsoluteTouchEx)!**</h5>
+  <h6 align="center"><a href="https://aur.archlinux.org/packages/abstouch-nux" alt="License">
+    <img src="https://img.shields.io/aur/license/abstouch-nux?style=for-the-badge"></a></h6>
+  <h6 align="center"><a href="https://aur.archlinux.org/packages/abstouch-nux" alt="Version">
+    <img src="https://img.shields.io/aur/version/abstouch-nux?style=for-the-badge"></a></h6>
+  <h6 align="center"><a href="https://aur.archlinux.org/packages/abstouch-nux" alt="AUR Rating">
+    <img src="https://img.shields.io/aur/votes/abstouch-nux?style=for-the-badge"></a></h6>
+  <h6 align="center"><a href="https://aur.archlinux.org/packages/abstouch-nux" alt="AUR Maintainer">
+    <img src="https://img.shields.io/aur/maintainer/abstouch-nux?style=for-the-badge"></a></h6>
+</p>
+
 
 ## Installation
 
@@ -31,6 +41,14 @@ $ git clone https://github.com/acedron/abstouch-nux.git
 $ cd abstouch-nux
 $ make -i build
 $ sudo make -i install
+```
+
+You can then uninstall it with:
+
+```bash
+$ git clone https://github.com/acedron/abstouch-nux.git
+$ cd abstouch-nux
+$ sudo make -i uninstall
 ```
 
 ## Usage

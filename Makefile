@@ -2,8 +2,8 @@ THIS_DIR=$(shell cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%N}}")" && pwd)
 
 BIN := abstouch
 DESTDIR :=
-CARGO ?= cargo
-GCC ?= gcc
+RUSTC ?= cargo
+CC ?= gcc
 PKGNAME := abstouch-nux
 PREFIX := /usr/local
 
@@ -13,16 +13,16 @@ C_INPUT_FLAGS ?= -lX11
 default: build
 
 .PHONY: build
-build: src/rust/main.rs
-	$(CARGO) build
+build: src/rust/main.rs src/c/input.c src/c/set_event.c src/c/set_offset.c
+	$(RUSTC) build
 	mkdir build
 	echo "-1" > build/event.conf
 	echo "" > build/ename.conf
 	echo "0" > build/xoff.conf
 	echo "0" > build/yoff.conf
-	$(GCC) $(C_INPUT_FLAGS) -o build/input src/c/input.c
-	$(GCC) -o build/set_event src/c/set_event.c
-	$(GCC) -o build/set_offset src/c/set_offset.c
+	$(CC) $(C_INPUT_FLAGS) -o build/input src/c/input.c
+	$(CC) -o build/set_event src/c/set_event.c
+	$(CC) -o build/set_offset src/c/set_offset.c
 
 .PHONY: install
 install:
