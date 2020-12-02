@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-complete -W "start stop help setevent setoffset" abstouch
+complete -W "start stop help setevent calibrate" abstouch

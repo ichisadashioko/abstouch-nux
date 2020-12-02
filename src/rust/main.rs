@@ -22,7 +22,7 @@ fn main()
 
     let input_bin = vec!["abstouch-nux-input", "/usr/share/abstouch-nux/bin/abstouch-nux-input"];
     let set_event_bin = vec!["abstouch-nux-set_event", "/usr/share/abstouch-nux/bin/abstouch-nux-set_event"];
-    let set_offset_bin = vec!["abstouch-nux-set_offset", "/usr/share/abstouch-nux/bin/abstouch-nux-set_offset"];
+    let calibrate_bin = vec!["abstouch-nux-calibrate", "/usr/share/abstouch-nux/bin/abstouch-nux-calibrate"];
     let main_bin = input_bin;
 
     let mut args: Vec<String> = env::args().collect();
@@ -94,7 +94,7 @@ fn main()
         println!("\x1b[1;32m => \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.");
         println!("\x1b[1;32m => \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.");
         println!("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.");
-        println!("\x1b[1;32m => \x1b[;msetoffset \x1b[1;32m=> \x1b[;mSet cursor offset to match your touchpad.");
+        println!("\x1b[1;32m => \x1b[;mcalibrate \x1b[1;32m=> \x1b[;mCalibrate to match your touchpad.");
         println!("");
         println!("\x1b[1;32m---=======\x1b[1;37mOptions\x1b[1;32m======---");
         println!("\x1b[1;32m => \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.");
@@ -200,10 +200,10 @@ fn main()
             Err(_) => println!("\x1b[1;31m => \x1b[;mAn error occured!")
         }
     }
-    else if command == "setoffset"
+    else if command == "calibrate"
     {
         let result = panic::catch_unwind(|| {
-            let mut proc = process::Command::new(set_offset_bin[1])
+            let mut proc = process::Command::new(calibrate_bin[1])
                 .spawn()
                 .unwrap();
             proc.wait()

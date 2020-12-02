@@ -10,6 +10,6 @@ _arguments -C -S \
   'stop[Stops the abstouch-nux daemon if there is any.]' \
   'help[Shows help text.]' \
   'setevent[Sets the input event.]' \
-  'setoffset[Sets the offset for touchpad.]' && rc=0
+  'calibrate[Calibrate to match your touchpad.]' && rc=0
 
 return rc
