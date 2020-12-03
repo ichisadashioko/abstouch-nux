@@ -1,5 +1,4 @@
 #include <stdio.h>
-
 #include <stdlib.h>
 
 #define XOFF_CONF_PATH "/usr/share/abstouch-nux/xoff.conf"
