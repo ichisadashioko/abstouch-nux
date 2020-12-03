@@ -201,8 +201,7 @@ static int get_event_by_name(char *ename)
     }
 }
 
-static void get_touch_position(int fd, int *x, int *y,
-    int *xmin, int *xmax, int *ymin, int *ymax)
+static void get_touch_limits(int fd, int *xoff, int *yoff)
 {
     struct input_event ev[64];
     int i, rd;
@@ -211,37 +210,57 @@ static void get_touch_position(int fd, int *x, int *y,
     FD_ZERO(&rdfs);
     FD_SET(fd, &rdfs);
 
-    select(fd + 1, &rdfs, NULL, NULL, NULL);
-    rd = read(fd, ev, sizeof(ev));
+    int input_xmin = 99999, input_xmax = -99999;
+    int input_ymin = 99999, input_ymax = -99999;
 
-    if (rd < (int) sizeof(struct input_event))
+    while (!stop)
     {
-        printf("\n\x1b[1;31m => \x1b[;mError reading input!\n");
-        printf("\x1b[1;32m => \x1b[;mExpected \x1b[1;37m%d\x1b[;m bytes, got \x1b[1;37m%d\n", (int) sizeof(struct input_event), rd);
-        return;
-    }
+        select(fd + 1, &rdfs, NULL, NULL, NULL);
+        if (stop)
+            break;
+        rd = read(fd, ev, sizeof(ev));
 
-    int absx[6] = {0}, absy[6] = {0};
-    ioctl(fd, EVIOCGABS(ABS_X), absx);
-    ioctl(fd, EVIOCGABS(ABS_Y), absy);
-    *xmin = absx[1];
-    *xmax = absx[2];
-    *ymin = absy[1];
-    *ymax = absy[2];
+        if (rd < (int) sizeof(struct input_event))
+        {
+            printf("\n\x1b[1;31m => \x1b[;mError reading input!\n");
+            printf("\x1b[1;32m => \x1b[;mExpected \x1b[1;37m%d\x1b[;m bytes, got \x1b[1;37m%d\n", (int) sizeof(struct input_event), rd);
+            return;
+        }
 
-    for (i = 0; i < rd / sizeof(struct input_event); i++)
-    {
-        unsigned int type, code;
-        type = ev[i].type;
-        code = ev[i].code;
+        int absx[6] = {0}, absy[6] = {0};
+        ioctl(fd, EVIOCGABS(ABS_X), absx);
+        ioctl(fd, EVIOCGABS(ABS_Y), absy);
+        int xmin = absx[1];
+        int xmax = absx[2];
+        int ymin = absy[1];
+        int ymax = absy[2];
 
-        if (type != EV_ABS)
-            continue;
+        for (i = 0; i < rd / sizeof(struct input_event); i++)
+        {
+            unsigned int type, code;
+            type = ev[i].type;
+            code = ev[i].code;
 
-        if (code == 0)
-            *x = ev[i].value;
-        else if (code == 1)
-            *y = ev[i].value;
+            if (type == EV_ABS)
+            {
+                if (code == ABS_X)
+                {
+                    if (ev[i].value < input_xmin) input_xmin = ev[i].value;
+                    if (ev[i].value > input_xmax) input_xmax = ev[i].value;
+                }
+                else if (code == ABS_Y)
+                {
+                    if (ev[i].value < input_ymin) input_ymin = ev[i].value;
+                    if (ev[i].value > input_ymax) input_ymax = ev[i].value;
+                }
+            }
+            else if (type == EV_KEY && (code == BTN_LEFT || code == BTN_RIGHT) && ev[i].value == 1)
+            {
+                *xoff = (input_xmin - xmin) + (input_xmax - xmax);
+                *yoff = (input_ymin - ymin) + (input_ymax - ymax);
+                stop = 1;
+            }
+        }
     }
 
     ioctl(fd, EVIOCGRAB, (void*)0);
@@ -312,28 +331,15 @@ int main(int argc, char *argv[])
 
     int xmin = 0, xmax = 0;
     int ymin = 0, ymax = 0;
+    int inxmin = 0, inxmax = 0;
+    int inymin = 0, inymax = 0;
 
-    printf("\x1b[1;32m => \x1b[1;37mTouch the top left corner of your touchpad\n");
-    printf("\x1b[1;32m => \x1b[1;37mthen press enter while holding your finger.\n");
-
-    getchar();
-    int firstx = 0, firsty = 0;
-    get_touch_position(fd, &firstx, &firsty, &xmin, &xmax, &ymin, &ymax);
-    printf("\x1b[1;32m => \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n", firstx, firsty);
-    printf("\x1b[1;32m => \x1b[1;37mMin Position: \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n\n", xmin, ymin);
-
-    printf("\x1b[1;32m => \x1b[1;37mTouch the bottom right corner of your touchpad\n");
-    printf("\x1b[1;32m => \x1b[1;37mthen press enter while holding your finger.\n");
-
-    getchar();
-    int lastx = 0, lasty = 0;
-    get_touch_position(fd, &lastx, &lasty, &xmin, &xmax, &ymin, &ymax);
-    printf("\x1b[1;32m => \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n", lastx, lasty);
-    printf("\x1b[1;32m => \x1b[1;37mMax Position: \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n", xmax, ymax);
+    printf("\x1b[1;32m => \x1b[1;37mRub your finger over the edges and corners of\n");
+    printf("\x1b[1;32m => \x1b[1;37myour touchpad for like 30 seconds or more and then\n");
+    printf("\x1b[1;32m => \x1b[1;37mclose as possible to 0 and then left click on your touchpad.\n\n");
 
     int xoff = 0, yoff = 0;
-    xoff = (firstx - xmin) + (lastx - xmax);
-    yoff = (firsty - ymin) + (lasty - ymax);
+    get_touch_limits(fd, &xoff, &yoff);
 
     printf("\x1b[1;31m => \x1b[;mCouldn't set offset!\n");
 
