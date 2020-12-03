@@ -66,16 +66,16 @@ And then, you can start the client right away.
 $ abstouch start
 ```
 
+You can calibrate input to match your touchpad.
+
+```bash
+$ abstouch calibrate
+```
+
 You can run it on background if you use `--daemon` flag.
 
 ```bash
 $ abstouch start -d
-```
-
-You can set cursor offset to match your touchpad.
-
-```bash
-$ abstouch setoffset
 ```
 
 See help or man page for more information.
