@@ -211,9 +211,9 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
                 continue;
 
             int xval, yval;
-            if (code == 0)
+            if (code == ABS_X)
                 xval = ev[i].value;
-            else if (code == 1)
+            else if (code == ABS_Y)
                 yval = ev[i].value;
 
             int cx = xval, cy = yval;
