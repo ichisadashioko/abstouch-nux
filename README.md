@@ -54,13 +54,7 @@ $ sudo make uninstall
 
 ## Usage
 
-First, you have to set an input event.
-
-```bash
-$ abstouch setevent
-```
-
-And then, you can start the client right away.
+You can start the client right away.
 
 ```bash
 $ abstouch start

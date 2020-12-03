@@ -11,7 +11,7 @@ C_INPUT_FLAGS ?= -lX11
 default: build
 
 .PHONY: build
-build: src/rust/main.rs src/c/input.c src/c/set_event.c src/c/set_offset.c
+build: src/rust/main.rs src/c/input.c src/c/set_event.c src/c/set_offset.c src/c/calibrate.c
 	$(RUSTC) build
 	mkdir build
 	echo "-1" > build/event.conf
@@ -20,6 +20,7 @@ build: src/rust/main.rs src/c/input.c src/c/set_event.c src/c/set_offset.c
 	echo "0" > build/yoff.conf
 	$(CC) $(C_INPUT_FLAGS) -o build/input src/c/input.c
 	$(CC) -o build/set_event src/c/set_event.c
+	$(CC) -o build/set_offset src/c/set_offset.c
 	$(CC) -o build/calibrate src/c/calibrate.c
 
 .PHONY: install
@@ -28,6 +29,7 @@ install:
 	install -Dm755 target/debug/main "${DESTDIR}${PREFIX}/bin/${BIN}"
 	install -Dm755 build/input "${DESTDIR}${PREFIX}/share/${PKGNAME}/bin/${PKGNAME}-input"
 	install -Dm755 build/set_event "${DESTDIR}${PREFIX}/share/${PKGNAME}/bin/${PKGNAME}-set_event"
+	install -Dm755 build/set_offset "${DESTDIR}${PREFIX}/share/${PKGNAME}/bin/${PKGNAME}-set_offset"
 	install -Dm755 build/calibrate "${DESTDIR}${PREFIX}/share/${PKGNAME}/bin/${PKGNAME}-calibrate"
 	@#Other Files
 	install -Dm666 build/event.conf "${DESTDIR}${PREFIX}/share/${PKGNAME}/event.conf"

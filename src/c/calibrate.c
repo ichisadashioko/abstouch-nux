@@ -17,8 +17,8 @@
 #define EVENT_PREFIX "event"
 #define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
 #define ENAME_CONF_PATH "/usr/share/abstouch-nux/ename.conf"
-#define EVENT_XOFF_PATH "/usr/share/abstouch-nux/xoff.conf"
-#define ENAME_YOFF_PATH "/usr/share/abstouch-nux/yoff.conf"
+#define XOFF_CONF_PATH "/usr/share/abstouch-nux/xoff.conf"
+#define YOFF_CONF_PATH "/usr/share/abstouch-nux/yoff.conf"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -201,7 +201,8 @@ static int get_event_by_name(char *ename)
     }
 }
 
-static void get_touch_position(int fd, int *x, int *y)
+static void get_touch_position(int fd, int *x, int *y,
+    int *xmin, int *xmax, int *ymin, int *ymax)
 {
     struct input_event ev[64];
     int i, rd;
@@ -220,14 +221,13 @@ static void get_touch_position(int fd, int *x, int *y)
         return;
     }
 
-    int xmin, xmax, ymin, ymax;
     int absx[6] = {0}, absy[6] = {0};
     ioctl(fd, EVIOCGABS(ABS_X), absx);
     ioctl(fd, EVIOCGABS(ABS_Y), absy);
-    xmin = absx[1];
-    xmax = absx[2];
-    ymin = absy[1];
-    ymax = absy[2];
+    *xmin = absx[1];
+    *xmax = absx[2];
+    *ymin = absy[1];
+    *ymax = absy[2];
 
     for (i = 0; i < rd / sizeof(struct input_event); i++)
     {
@@ -269,6 +269,9 @@ int main(int argc, char *argv[])
 
     if (is_abs_device(fd) == 0)
     {
+        printf("\x1b[1;31m => \x1b[;mEvent \x1b[1;37m%d \x1b[;mhas no absolute input!\n", event);
+        printf("\x1b[1;32m => \x1b[;mChecking for past events.\n");
+
         char *buffer;
         long length;
         FILE *fp = fopen(ENAME_CONF_PATH, "rb");
@@ -307,21 +310,42 @@ int main(int argc, char *argv[])
         fd = open(fname, O_RDONLY);
     }
 
+    int xmin = 0, xmax = 0;
+    int ymin = 0, ymax = 0;
+
     printf("\x1b[1;32m => \x1b[1;37mTouch the top left corner of your touchpad\n");
     printf("\x1b[1;32m => \x1b[1;37mthen press enter while holding your finger.\n");
 
     getchar();
     int firstx = 0, firsty = 0;
-    get_touch_position(fd, &firstx, &firsty);
-    printf("\x1b[1;32m => \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n\n", firstx, firsty);
+    get_touch_position(fd, &firstx, &firsty, &xmin, &xmax, &ymin, &ymax);
+    printf("\x1b[1;32m => \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n", firstx, firsty);
+    printf("\x1b[1;32m => \x1b[1;37mMin Position: \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n\n", xmin, ymin);
 
     printf("\x1b[1;32m => \x1b[1;37mTouch the bottom right corner of your touchpad\n");
     printf("\x1b[1;32m => \x1b[1;37mthen press enter while holding your finger.\n");
 
     getchar();
     int lastx = 0, lasty = 0;
-    get_touch_position(fd, &lastx, &lasty);
+    get_touch_position(fd, &lastx, &lasty, &xmin, &xmax, &ymin, &ymax);
     printf("\x1b[1;32m => \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n", lastx, lasty);
+    printf("\x1b[1;32m => \x1b[1;37mMax Position: \x1b[;m%d\x1b[1;37mx\x1b[;m%d\n", xmax, ymax);
+
+    int xoff = 0, yoff = 0;
+    xoff = (firstx - xmin) + (lastx - xmax);
+    yoff = (firsty - ymin) + (lasty - ymax);
+
+    printf("\x1b[1;31m => \x1b[;mCouldn't set offset!\n");
+
+    FILE *xfp = fopen(XOFF_CONF_PATH, "w");
+    fprintf(xfp, "%d", xoff);
+    fclose(xfp);
+    FILE *yfp = fopen(YOFF_CONF_PATH, "w");
+    fprintf(yfp, "%d", yoff);
+    fclose(yfp);
+
+    printf("\x1b[A\x1b[2K\x1b[1;32m => \x1b[1;37mSuccessfully set offset as \x1b[;m%d\x1b[1;37mx\x1b[;m%d\x1b[1;37m.\x1b[;m\n",
+        xoff, yoff);
 
     return EXIT_SUCCESS;
 }

@@ -22,6 +22,7 @@ fn main()
 
     let input_bin = vec!["abstouch-nux-input", "/usr/share/abstouch-nux/bin/abstouch-nux-input"];
     let set_event_bin = vec!["abstouch-nux-set_event", "/usr/share/abstouch-nux/bin/abstouch-nux-set_event"];
+    let set_offset_bin = vec!["abstouch-nux-set_offset", "/usr/share/abstouch-nux/bin/abstouch-nux-set_offset"];
     let calibrate_bin = vec!["abstouch-nux-calibrate", "/usr/share/abstouch-nux/bin/abstouch-nux-calibrate"];
     let main_bin = input_bin;
 
@@ -93,8 +94,9 @@ fn main()
         println!("\x1b[1;32m => \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows help text.");
         println!("\x1b[1;32m => \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.");
         println!("\x1b[1;32m => \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.");
-        println!("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.");
         println!("\x1b[1;32m => \x1b[;mcalibrate \x1b[1;32m=> \x1b[;mCalibrate to match your touchpad.");
+        println!("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.");
+        println!("\x1b[1;32m => \x1b[;msetoffset \x1b[1;32m=> \x1b[;mSet offset manually to match your touchpad.");
         println!("");
         println!("\x1b[1;32m---=======\x1b[1;37mOptions\x1b[1;32m======---");
         println!("\x1b[1;32m => \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.");
@@ -107,57 +109,60 @@ fn main()
     else if command == "start"
     {
         let result = panic::catch_unwind(|| {
-            let event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
+            let mut event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
                 .expect("\x1b[1;31m => \x1b[;mCouldn't read event.conf!");
             let xoff_contents = fs::read_to_string("/usr/share/abstouch-nux/xoff.conf")
                 .expect("\x1b[1;31m => \x1b[;mCouldn't read xoff.conf!");
             let yoff_contents = fs::read_to_string("/usr/share/abstouch-nux/yoff.conf")
                 .expect("\x1b[1;31m => \x1b[;mCouldn't read yoff.conf!");
+
             if event_contents == "-1" || event_contents == "-1\n"
             {
                 println!("\x1b[1;31m => \x1b[;mEvent not set!");
-                println!("\x1b[1;32m => \x1b[;mTry using the following command:");
-                println!("\x1b[1;32m => \x1b[;mabstouch setevent");
+                let mut seteventproc = process::Command::new(set_event_bin[1])
+                    .spawn()
+                    .unwrap();
+                seteventproc.wait()
+                    .unwrap();
+                event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
+                    .expect("\x1b[1;31m => \x1b[;mCouldn't read event.conf!");
+            }
+
+            let mut args = vec![];
+            if !daemon && !quiet
+            {
+                args.push("-v");
+            }
+
+            let eventarg = "-event".to_owned() + &event_contents[..];
+            let xoffarg = "-xoff".to_owned() + &xoff_contents[..];
+            let yoffarg = "-yoff".to_owned() + &yoff_contents[..];
+            args.push(&eventarg[..]);
+            args.push(&xoffarg[..]);
+            args.push(&yoffarg[..]);
+
+            if s.get_process_by_name(main_bin[0]).len() > 0
+            {
+                println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");
                 process::exit(1);
             }
             else
             {
-                let mut args = vec![];
-                if !daemon && !quiet
-                {
-                    args.push("-v");
-                }
+                log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
 
-                let eventarg = "-event".to_owned() + &event_contents[..];
-                let xoffarg = "-xoff".to_owned() + &xoff_contents[..];
-                let yoffarg = "-yoff".to_owned() + &yoff_contents[..];
-                args.push(&eventarg[..]);
-                args.push(&xoffarg[..]);
-                args.push(&yoffarg[..]);
-
-                if s.get_process_by_name(main_bin[0]).len() > 0
+                let mut proc = process::Command::new(main_bin[1])
+                    .args(args)
+                    .spawn()
+                    .unwrap();
+                if daemon
                 {
-                    println!("\x1b[1;31m => \x1b[;mThere is already an abstouch-nux daemon running!");
-                    process::exit(1);
+                    log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux... Success.\n"), quiet);
                 }
                 else
                 {
-                    log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux...\r"), quiet);
-
-                    let mut proc = process::Command::new(main_bin[1])
-                        .args(args)
-                        .spawn()
+                    log(String::from("\n"), quiet);
+                    proc.wait()
                         .unwrap();
-                    if daemon
-                    {
-                        log(String::from("\x1b[1;32m => \x1b[;mStarting abstouch-nux... Success.\n"), quiet);
-                    }
-                    else
-                    {
-                        log(String::from("\n"), quiet);
-                        proc.wait()
-                            .unwrap();
-                    }
                 }
             }
         });
@@ -200,10 +205,45 @@ fn main()
             Err(_) => println!("\x1b[1;31m => \x1b[;mAn error occured!")
         }
     }
+    else if command == "setoffset"
+    {
+        let result = panic::catch_unwind(|| {
+            let mut proc = process::Command::new(set_offset_bin[1])
+                .spawn()
+                .unwrap();
+            proc.wait()
+                .unwrap();
+        });
+
+        match result {
+            Ok(res) => res,
+            Err(_) => println!("\x1b[1;31m => \x1b[;mAn error occured!")
+        }
+    }
     else if command == "calibrate"
     {
         let result = panic::catch_unwind(|| {
+            let mut event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
+                .expect("\x1b[1;31m => \x1b[;mCouldn't read event.conf!");
+
+            if event_contents == "-1" || event_contents == "-1\n"
+            {
+                println!("\x1b[1;31m => \x1b[;mEvent not set!");
+                let mut seteventproc = process::Command::new(set_event_bin[1])
+                    .spawn()
+                    .unwrap();
+                seteventproc.wait()
+                    .unwrap();
+                event_contents = fs::read_to_string("/usr/share/abstouch-nux/event.conf")
+                    .expect("\x1b[1;31m => \x1b[;mCouldn't read event.conf!");
+            }
+
+            let mut args = vec![];
+            let eventarg = "-event".to_owned() + &event_contents[..];
+            args.push(&eventarg[..]);
+
             let mut proc = process::Command::new(calibrate_bin[1])
+                .args(args)
                 .spawn()
                 .unwrap();
             proc.wait()
