@@ -1,4 +1,3 @@
-# abstouch-nux
 <p align="center">
   <h1 align="center">abstouch-nux</h1>
   <h4 align="center">An absolute touchpad input client for GNU/Linux.</h4>
