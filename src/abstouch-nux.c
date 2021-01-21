@@ -27,6 +27,8 @@
 #include <unistd.h>
 
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
+#define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
+#define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 
 int main(int argc, char *argv[])
 {
@@ -97,7 +99,14 @@ int main(int argc, char *argv[])
         return set_offset(1, setoffset_argv);
     }
 
-    int verbose = 0;
+    int verbose = 1;
+    int daemon = 0;
+    for (size_t i = 0; i < options_size; i++) {
+        if (!strcmp(options[i], "q") || !strcmp(options[i], "quiet"))
+            verbose = 0;
+        else if (!strcmp(options[i], "d") || !strcmp(options[i], "daemon"))
+            daemon = 1;
+    }
 
     char *event = 0;
     long event_length;
@@ -147,6 +156,59 @@ int main(int argc, char *argv[])
         return calibrate(2, calibrate_argv);
     }
 
+    char *xoff = 0;
+    long xoff_length;
+    FILE *xoff_f = fopen(XOFF_CONF_PATH, "rb");
+    if (xoff_f) {
+        fseek(xoff_f, 0, SEEK_END);
+        xoff_length = ftell(xoff_f);
+        fseek(xoff_f, 0, SEEK_SET);
+        xoff = malloc(xoff_length + 1);
+        if (xoff)
+            fread(xoff, 1, xoff_length, xoff_f);
+        fclose(xoff_f);
+        xoff[xoff_length] = '\0';
+    }
+
+    char *yoff = 0;
+    long yoff_length;
+    FILE *yoff_f = fopen(YOFF_CONF_PATH, "rb");
+    if (yoff_f) {
+        fseek(yoff_f, 0, SEEK_END);
+        yoff_length = ftell(yoff_f);
+        fseek(yoff_f, 0, SEEK_SET);
+        yoff = malloc(yoff_length + 1);
+        if (yoff)
+            fread(yoff, 1, yoff_length, yoff_f);
+        fclose(yoff_f);
+        yoff[yoff_length] = '\0';
+    }
+
+    if (!strcmp(command, "start")) {
+        if (daemon) {
+            printf("\x1b[1;31m => \x1b[;mDaemon not implemented yet!\n");
+            return EXIT_FAILURE;
+        } else {
+            char *input_argv[5] = {"input"};
+            char event_arg[256];
+            char xoff_arg[256];
+            char yoff_arg[256];
+            snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
+            snprintf(xoff_arg, (sizeof(xoff_arg) / sizeof(char)), "-xoff%s", xoff);
+            snprintf(yoff_arg, (sizeof(yoff_arg) / sizeof(char)), "-yoff%s", yoff);
+            input_argv[1] = event_arg;
+            input_argv[2] = xoff_arg;
+            input_argv[3] = yoff_arg;
+            if (verbose)
+                input_argv[4] = "-v";
+            else
+                input_argv[4] = "";
+            return input(5, input_argv);
+        }
+    } else if (!strcmp(command, "stop")) {
+        printf("\x1b[1;31m => \x1b[;mDaemon not implemented yet!\n");
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
-    //return input(argc, argv);
 }
