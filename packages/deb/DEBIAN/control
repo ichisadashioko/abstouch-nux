@@ -1,0 +1,8 @@
+Package: abstouch-nux
+Version: 1.4.0-1
+Section: base
+Priority: optional
+Architecture: i386
+Maintainer: acedron <acedrons@yahoo.co.jp>
+Description: abstouch-nux
+ An absolute touchpad input client for GNU/Linux.

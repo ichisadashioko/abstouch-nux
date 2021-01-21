@@ -17,7 +17,24 @@
 
 ## Installation
 
-### Building From Source
+### Arch Linux (Manjaro, etc.)
+
+Available as `abstouch-nux` in AUR.
+
+```bash
+$ yay -S abstouch-nux
+```
+
+### Debian (Ubuntu, Kali, Mint, etc.)
+
+Available as a `.deb` package.
+
+```bash
+$ wget $(curl -s https://api.github.com/repos/acedron/abstouch-nux/releases/latest | grep -o "http.*deb") -q --show-progress
+$ sudo dpkg -i abstouch-nux*.deb
+```
+
+### Other / Building From Source
 
 You can use autoconf to make it.
 
