@@ -17,3 +17,15 @@
 ****************************************************************************/
 
 #include "calibrate.h"
+#include "input.h"
+#include "set_event.h"
+#include "set_offset.h"
+
+#include <stdio.h>
+
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
+{
+    return input(argc, argv);
+}

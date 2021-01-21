@@ -17,39 +17,20 @@
 
 ## Installation
 
-### Arch Linux (Manjaro etc.)
-Available as `abstouch-nux` AUR [package](https://aur.archlinux.org/packages/abstouch-nux).
-
-```bash
-$ yay -S abstouch-nux
-```
-
-### Debian (Ubuntu, Kali etc.)
-Available as `abstouch-nux` .deb [package](https://github.com/acedron/abstouch-nux/releases/latest).
-
-```bash
-$ wget $(curl -s https://api.github.com/repos/acedron/abstouch-nux/releases/latest | grep -o "http.*deb") -q --show-progress
-$ sudo dpkg -i abstouch-nux*.deb
-```
-
 ### Building From Source
 
-**Not recommended.** Make sure you have `rust` and `gcc` installed.
+You can use autoconf to make it.
 
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
 $ cd abstouch-nux
-$ make build
+$ ./autogen.sh
+$ ./configure
+$ make
 $ sudo make install
 ```
 
-You can then uninstall it with:
-
-```bash
-$ git clone https://github.com/acedron/abstouch-nux.git
-$ cd abstouch-nux
-$ sudo make uninstall
-```
+You can replace `install` with `uninstall` if you want to uninstall.
 
 ## Usage
 
