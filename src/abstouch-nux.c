@@ -16,8 +16,8 @@
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 
-#include "calibrate.h"
 #include "input.h"
+#include "calibrate.h"
 #include "set_event.h"
 #include "set_offset.h"
 
