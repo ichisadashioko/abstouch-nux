@@ -15,7 +15,6 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-
 #include "input.h"
 #include "calibrate.h"
 #include "set_event.h"
@@ -26,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 
 int main(int argc, char *argv[])
 {
@@ -89,11 +90,61 @@ int main(int argc, char *argv[])
         printf("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;mman page for examples and more.\n");
         return EXIT_SUCCESS;
     } else if (!strcmp(command, "setevent")) {
-        char *setevent_argv[0];
-        return set_event(0, setevent_argv);
+        char *setevent_argv[1] = {"setevent"};
+        return set_event(1, setevent_argv);
     } else if (!strcmp(command, "setoffset")) {
-        char *setoffset_argv[0];
-        return set_event(0, setoffset_argv);
+        char *setoffset_argv[1] = {"setoffset"};
+        return set_offset(1, setoffset_argv);
+    }
+
+    int verbose = 0;
+
+    char *event = 0;
+    long event_length;
+    FILE *event_f = fopen(EVENT_CONF_PATH, "rb");
+    if (event_f) {
+        fseek(event_f, 0, SEEK_END);
+        event_length = ftell(event_f);
+        fseek(event_f, 0, SEEK_SET);
+        event = malloc(event_length + 1);
+        if (event)
+            fread(event, 1, event_length, event_f);
+        fclose(event_f);
+        event[event_length] = '\0';
+    }
+
+    if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
+        printf("\x1b[1;31m => \x1b[;mEvent not set!\n");
+        char *setevent_argv[1] = {"setevent"};
+        if (set_event(1, setevent_argv)) {
+            FILE *event_ff = fopen(EVENT_CONF_PATH, "rb");
+            if (event_ff) {
+                fseek(event_ff, 0, SEEK_END);
+                event_length = ftell(event_ff);
+                fseek(event_ff, 0, SEEK_SET);
+                event = malloc(event_length + 1);
+                if (event)
+                    fread(event, 1, event_length, event_ff);
+                fclose(event_ff);
+                event[event_length] = '\0';
+            }
+        }
+
+        if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
+            printf("\x1b[1;31m => \x1b[;mEvent still not set!\n");
+            return EXIT_FAILURE;
+        }
+    } else if (!event) {
+        printf("\x1b[1;31m => \x1b[;mCouldn't get event!\n");
+        return EXIT_FAILURE;
+    }
+
+    if (!strcmp(command, "calibrate")) {
+        char *calibrate_argv[2] = {"calibrate"};
+        char event_arg[256];
+        snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
+        calibrate_argv[1] = event_arg;
+        return calibrate(2, calibrate_argv);
     }
 
     return EXIT_SUCCESS;
