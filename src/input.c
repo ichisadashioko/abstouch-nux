@@ -1,4 +1,23 @@
+/****************************************************************************
+** abstouch-nux - An absolute touchpad input client for GNU/Linux.
+** Copyright (C) 2021  acedron <acedrons@yahoo.co.jp>
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
 #define _GNU_SOURCE
+#include "input.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,8 +34,8 @@
 
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"
-#define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
-#define ENAME_CONF_PATH "/usr/share/abstouch-nux/ename.conf"
+#define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
+#define ENAME_CONF_PATH "/usr/local/share/abstouch-nux/ename.conf"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -286,7 +305,7 @@ static int get_event_by_name(char *ename)
     }
 }
 
-int main(int argc, char *argv[])
+int input(int argc, char *argv[])
 {
     int verbose = 0, event = 0;
     int xoff = 0, yoff = 0;

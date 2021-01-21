@@ -1,4 +1,23 @@
+/****************************************************************************
+** abstouch-nux - An absolute touchpad input client for GNU/Linux.
+** Copyright (C) 2021  acedron <acedrons@yahoo.co.jp>
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
 #define _GNU_SOURCE
+#include "calibrate.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,10 +34,10 @@
 
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"
-#define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
-#define ENAME_CONF_PATH "/usr/share/abstouch-nux/ename.conf"
-#define XOFF_CONF_PATH "/usr/share/abstouch-nux/xoff.conf"
-#define YOFF_CONF_PATH "/usr/share/abstouch-nux/yoff.conf"
+#define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
+#define ENAME_CONF_PATH "/usr/local/share/abstouch-nux/ename.conf"
+#define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
+#define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
@@ -266,7 +285,7 @@ static void get_touch_limits(int fd, int *xoff, int *yoff)
     ioctl(fd, EVIOCGRAB, (void*)0);
 }
 
-int main(int argc, char *argv[])
+int calibrate(int argc, char *argv[])
 {
     int event = 0;
     char *p;
