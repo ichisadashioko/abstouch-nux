@@ -25,7 +25,7 @@ See **[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/insta
 ### Building From Source
 
 * You can use ***autotools*** to make it.
-* Make sure you have `gcc`, `automake`, `autoconf` and `libx11-dev (libx11 for Arch)` installed.
+* Make sure you have `gcc`, `automake`, `autoconf` and `libx11-dev (libx11 or libX11-devel for some systems)` installed.
 
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
