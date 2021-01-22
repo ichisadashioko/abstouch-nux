@@ -44,7 +44,7 @@ You can start the client right away.
 
 See **[usage](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md)** documentation for more information.
 
-See **[examples](https://github.com/acedron/abstouch-nux/tree/c-cli/examples)** directory for some examples.
+See **[examples](https://github.com/acedron/abstouch-nux/tree/master/examples)** directory for some examples.
 
 ```bash
 $ abstouch start
