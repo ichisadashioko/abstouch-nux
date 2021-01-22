@@ -1,4 +1,23 @@
+/****************************************************************************
+** abstouch-nux - An absolute touchpad input client for GNU/Linux.
+** Copyright (C) 2021  acedron <acedrons@yahoo.co.jp>
+**
+** This program is free software: you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program.  If not, see <https://www.gnu.org/licenses/>.
+****************************************************************************/
 #define _GNU_SOURCE
+#include "set_event.h"
+
 #include <stdio.h>
 
 #include <linux/input.h>
@@ -11,8 +30,8 @@
 
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"
-#define EVENT_CONF_PATH "/usr/share/abstouch-nux/event.conf"
-#define ENAME_CONF_PATH "/usr/share/abstouch-nux/ename.conf"
+#define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
+#define ENAME_CONF_PATH "/usr/local/share/abstouch-nux/ename.conf"
 
 static int is_event_device(const struct dirent *dir)
 {
@@ -60,7 +79,7 @@ static int scan_devices(void)
     return max_device;
 }
 
-int main(int argc, char *argv[])
+int set_event(int argc, char *argv[])
 {
     int event;
     int max_input = scan_devices();
