@@ -17,12 +17,12 @@ $ abstouch-nux <command> [options?]
 
 * **Usage:** `abstouch-nux start [options?]`
 * **Description:** Starts the abstouch-nux input client.
-* **Options:** See **[options](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md#options)** part.
+* **Options:** See **[options](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md#start-1)** part.
 
 #### stop
 
 * **Usage:** `abstouch-nux stop`
-* **Description:** Stops the abstouch-nux daemon if present. See **[daemon option for start]()** command.
+* **Description:** Stops the abstouch-nux daemon if present. See **[daemon option for start](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md#-d----daemon)** command.
 
 #### calibrate
 
@@ -49,4 +49,4 @@ $ abstouch-nux <command> [options?]
 
 ##### -d / --daemon
 
-* **Descriptions:** Starts the abstouch-nux as daemon and makes it run at background. See **[stop]()** command.
+* **Descriptions:** Starts the abstouch-nux as daemon and makes it run at background. See **[stop](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md#stop)** command.
