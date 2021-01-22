@@ -25,10 +25,51 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
+#define PROCESS_NAME "abstouch-nux"
+
+static char *str_replace(char *orig, char *rep, char *with)
+{
+    char *result;
+    char *ins;
+    char *tmp;
+    int len_rep;
+    int len_with;
+    int len_front;
+    int count;
+
+    if (!orig || !rep)
+        return NULL;
+    len_rep = strlen(rep);
+    if (len_rep == 0)
+        return NULL;
+    if (!with)
+        with = "";
+    len_with = strlen(with);
+
+    ins = orig;
+    for (count = 0; (tmp = strstr(ins, rep)); ++count) {
+        ins = tmp + len_rep;
+    }
+
+    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+    if (!result)
+        return NULL;
+    while (count--) {
+        ins = strstr(orig, rep);
+        len_front = ins - orig;
+        tmp = strncpy(tmp, orig, len_front) + len_front;
+        tmp = strcpy(tmp, with) + len_with;
+        orig += len_front + len_rep;
+    }
+    strcpy(tmp, orig);
+    return result;
+}
 
 int main(int argc, char *argv[])
 {
@@ -61,9 +102,9 @@ int main(int argc, char *argv[])
     }
 
     if (otherArgs_size < 1) {
-        printf("\x1b[1;31m => \x1b[1;37mPlease provide a command!\n");
-        printf("\x1b[1;32m => \x1b[1;37mUsage: \x1b[;mabstouch <command> [options]\n");
-        printf("\x1b[1;32m => \x1b[1;37mSee: \x1b[;mabstouch help\n");
+        printf(" \x1b[1;31m=> \x1b[1;37mPlease provide a command!\n");
+        printf(" \x1b[1;32m=> \x1b[1;37mUsage: \x1b[;mabstouch <command> [options]\n");
+        printf(" \x1b[1;32m=> \x1b[1;37mSee: \x1b[;mabstouch help\n");
         return EXIT_FAILURE;
     }
 
@@ -123,7 +164,7 @@ int main(int argc, char *argv[])
     }
 
     if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
-        printf("\x1b[1;31m => \x1b[;mEvent not set!\n");
+        printf(" \x1b[1;31m=> \x1b[;mEvent not set!\n");
         char *setevent_argv[1] = {"setevent"};
         if (set_event(1, setevent_argv)) {
             FILE *event_ff = fopen(EVENT_CONF_PATH, "rb");
@@ -140,11 +181,11 @@ int main(int argc, char *argv[])
         }
 
         if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
-            printf("\x1b[1;31m => \x1b[;mEvent still not set!\n");
+            printf(" \x1b[1;31m=> \x1b[;mCouldn't set event!\n");
             return EXIT_FAILURE;
         }
     } else if (!event) {
-        printf("\x1b[1;31m => \x1b[;mCouldn't get event!\n");
+        printf(" \x1b[1;31m=> \x1b[;mCouldn't get event!\n");
         return EXIT_FAILURE;
     }
 
@@ -184,12 +225,23 @@ int main(int argc, char *argv[])
         yoff[yoff_length] = '\0';
     }
 
+    pid_t pid = getpid();
+    int pidS_length = snprintf(NULL, 0, "%d", pid);
+    char *pidstring = malloc(pidS_length + 1);
+    snprintf( pidstring, pidS_length + 1, "%d", pid);
+    char line[256];
+    FILE *cmd = popen("pidof -x abstouch-nux", "r");
+    fgets(line, 256, cmd);
+    pclose(cmd);
+    char *otherRaw = str_replace(line, pidstring, "");
+    if (otherRaw == NULL) {
+        printf(" \x1b[1;31m=> \x1b[;mCouldn't get running processes!\n");
+    }
+    char *other = str_replace(otherRaw, "\n", "");
+
     if (!strcmp(command, "start")) {
-        if (daemon) {
-            printf("\x1b[1;31m => \x1b[;mDaemon not implemented yet!\n");
-            return EXIT_FAILURE;
-        } else {
-            char *input_argv[5] = {"input"};
+        if (!strcmp(other, "")) {
+            char *input_argv[6] = {"input"};
             char event_arg[256];
             char xoff_arg[256];
             char yoff_arg[256];
@@ -199,15 +251,35 @@ int main(int argc, char *argv[])
             input_argv[1] = event_arg;
             input_argv[2] = xoff_arg;
             input_argv[3] = yoff_arg;
-            if (verbose)
+            if (verbose && !daemon)
                 input_argv[4] = "-v";
             else
                 input_argv[4] = "";
-            return input(5, input_argv);
+            if (daemon)
+                input_argv[5] = "-d";
+            else
+                input_argv[5] = "";
+
+            return input(6, input_argv);
+        } else {
+            printf(" \x1b[1;31m=> \x1b[;mAn abstouch-nux daemon is already running!\n");
+            return EXIT_FAILURE;
         }
     } else if (!strcmp(command, "stop")) {
-        printf("\x1b[1;31m => \x1b[;mDaemon not implemented yet!\n");
-        return EXIT_FAILURE;
+        if (!strcmp(other, "")) {
+            printf(" \x1b[1;31m=> \x1b[;mNo abstouch-nux daemon is running!\n");
+            return EXIT_FAILURE;
+        } else {
+            char *p;
+            pid_t daemonPid = strtol(other, &p, 10);
+            int killRes = kill(daemonPid, SIGKILL);
+            if (killRes == 0) {
+                return EXIT_SUCCESS;
+            } else {
+                printf(" \x1b[1;31m=> \x1b[;mCouldn't stop the abstouch-nux daemon!\n");
+                return EXIT_FAILURE;
+            }
+        }
     }
 
     return EXIT_SUCCESS;

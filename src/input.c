@@ -312,28 +312,40 @@ int input(int argc, char *argv[])
     char *p;
     for (int i = 1; i < argc; i++)
     {
-        if (strcmp(argv[i], "-v") == 0)
+        if (!strcmp(argv[i], "-v"))
             verbose = 1;
 
-        if (strncmp(argv[i], "-event", 6) == 0)
+        if (!strncmp(argv[i], "-event", 6))
         {
             char *eventstr = argv[i];
             shift_string(eventstr, 6);
             event = strtol(eventstr, &p, 10);
         }
 
-        if (strncmp(argv[i], "-xoff", 5) == 0)
+        if (!strncmp(argv[i], "-xoff", 5))
         {
             char *xoffstr = argv[i];
             shift_string(xoffstr, 5);
             xoff = strtol(xoffstr, &p, 10);
         }
 
-        if (strncmp(argv[i], "-yoff", 5) == 0)
+        if (!strncmp(argv[i], "-yoff", 5))
         {
             char *yoffstr = argv[i];
             shift_string(yoffstr, 5);
             yoff = strtol(yoffstr, &p, 10);
+        }
+
+        if (!strcmp(argv[i], "-d")) {
+            pid_t childPid;
+            childPid = fork();
+            if (childPid >= 0) {
+                if (childPid != 0)
+                    return EXIT_SUCCESS;
+            } else {
+                printf(" \x1b[1;31m=> \x1b[;mCouldn't start abstouch-nux daemon!");
+                return EXIT_FAILURE;
+            }
         }
     }
 

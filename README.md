@@ -18,9 +18,14 @@
 
 ## Installation
 
+Only available for **GNU/Linux**.
+
+See **[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/installing.md)** documentation for more information.
+
 ### Building From Source
 
-You can use autoconf to make it.
+* You can use ***autotools*** to make it.
+* Make sure you have `gcc`, `automake`, `autoconf` and `libx11-dev (libx11 for Arch)` installed.
 
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
@@ -36,6 +41,8 @@ You can replace `install` with `uninstall` if you want to uninstall.
 ## Usage
 
 You can start the client right away.
+
+See **[usage](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md)** documentation for more information.
 
 ```bash
 $ abstouch start

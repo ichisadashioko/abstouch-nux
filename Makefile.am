@@ -1,2 +1,2 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src man examples config completion
+SUBDIRS = src man examples config completion doc
