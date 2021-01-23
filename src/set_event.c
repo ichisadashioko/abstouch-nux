@@ -35,7 +35,7 @@
 
 static int is_event_device(const struct dirent *dir)
 {
-    return strncmp(EVENT_PREFIX, dir->d_name, 5) == 0;
+    return !strncmp(EVENT_PREFIX, dir->d_name, 5);
 }
 
 static char device_names[256][257];
@@ -51,9 +51,8 @@ static int scan_devices(void)
     if (ndev < 1)
         return -1;
 
-    printf("\x1b[1;32m => \x1b[1;37mEvents:\n");
-    for (i = 0; i < ndev; i++)
-    {
+    printf(" \x1b[1;32m=> \x1b[1;37mEvents:\n");
+    for (i = 0; i < ndev; i++) {
         char fname[64];
         int fd = -1;
         char name[256] = "\x1b[1;31mUnknown\x1b[;m";
@@ -65,7 +64,7 @@ static int scan_devices(void)
             continue;
         ioctl(fd, EVIOCGNAME(sizeof(name)), name);
 
-        printf("\x1b[1;32m   => \x1b[1;37m%s \x1b[1;32m=> \x1b[;m%s\n", fname, name);
+        printf("   \x1b[1;32m=> \x1b[1;37m%s \x1b[1;32m=> \x1b[;m%s\n", fname, name);
         strcpy(device_names[i], name);
         close(fd);
 
@@ -84,25 +83,23 @@ int set_event(int argc, char *argv[])
     int event;
     int max_input = scan_devices();
 
-    if (max_input < 0)
-    {
-        printf("\x1b[1;31m => \x1b[;mNo event found!\n");
-        printf("\x1b[1;32m => \x1b[;mTry running as root.\n");
+    if (max_input < 0) {
+        printf(" \x1b[1;31m=> \x1b[;mNo event found!\n");
+        printf(" \x1b[1;32m=> \x1b[;mTry running as root.\n");
         return EXIT_FAILURE;
     }
 
-    printf("\x1b[1;32m => \x1b[1;37mEnter your event's id\x1b[1;32m (\x1b[;m0\x1b[1;32m-\x1b[;m%d\x1b[1;32m): \x1b[;m", max_input);
+    printf(" \x1b[1;32m=> \x1b[1;37mEnter your event's id\x1b[1;32m (\x1b[;m0\x1b[1;32m-\x1b[;m%d\x1b[1;32m): \x1b[;m", max_input);
     char *p, s[100];
-    while (fgets(s, sizeof(s), stdin))
-    {
+    while (fgets(s, sizeof(s), stdin)) {
         event = strtol(s, &p, 10);
         if ((p == s || *p != '\n') || (event < 0 || event > max_input))
-            printf("\x1b[A\x1b[2K\x1b[1;32m => \x1b[1;37mEnter your event's id\x1b[1;32m (\x1b[;m0\x1b[1;32m-\x1b[;m%d\x1b[1;32m): \x1b[;m", max_input);
+            printf("\x1b[A\x1b[2K \x1b[1;32m=> \x1b[1;37mEnter your event's id\x1b[1;32m (\x1b[;m0\x1b[1;32m-\x1b[;m%d\x1b[1;32m): \x1b[;m", max_input);
         else
             break;
     }
 
-    printf("\x1b[1;31m => \x1b[;mCouldn't set event!\n");
+    printf(" \x1b[1;31m=> \x1b[;mCouldn't set event!\n");
 
     FILE *fp = fopen(EVENT_CONF_PATH, "w");
     fprintf(fp, "%d", event);
@@ -112,6 +109,6 @@ int set_event(int argc, char *argv[])
     fprintf(fp, "%s", device_names[event]);
     fclose(fp);
 
-    printf("\x1b[A\x1b[2K\x1b[1;32m => \x1b[;mSuccessfully set event id as \x1b[1;37m%d\x1b[;m.\n", event);
+    printf("\x1b[A\x1b[2K \x1b[1;32m=> \x1b[;mSuccessfully set event id as \x1b[1;37m%d\x1b[;m.\n", event);
     return EXIT_SUCCESS;
 }

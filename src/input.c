@@ -47,8 +47,8 @@
 
 static void logstr(char *str, int verbose)
 {
-    if (verbose == 1)
-        printf("  \x1b[1;32m - \x1b[;m%s\x1b[;m\n", str);
+    if (verbose)
+        printf("   \x1b[1;32m- \x1b[;m%s\x1b[;m\n", str);
 }
 
 static void shift_string(char *str, size_t n)
@@ -195,17 +195,15 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
     FD_ZERO(&rdfs);
     FD_SET(fd, &rdfs);
 
-    while (!stop)
-    {
+    while (!stop) {
         select(fd + 1, &rdfs, NULL, NULL, NULL);
         if (stop)
             break;
         rd = read(fd, ev, sizeof(ev));
 
-        if (rd < (int) sizeof(struct input_event))
-        {
-            printf("\n\x1b[1;31m => \x1b[;mError reading input!\n");
-            printf("\x1b[1;32m => \x1b[;mExpected \x1b[1;37m%d\x1b[;m bytes, got \x1b[1;37m%d\n", (int) sizeof(struct input_event), rd);
+        if (rd < (int) sizeof(struct input_event)) {
+            printf("\n \x1b[1;31m=> \x1b[;mError reading input!\n");
+            printf(" \x1b[1;32m=> \x1b[;mExpected \x1b[1;37m%d\x1b[;m bytes, got \x1b[1;37m%d\n", (int) sizeof(struct input_event), rd);
             return EXIT_FAILURE;
         }
 
@@ -219,8 +217,7 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
         ymin = absy[1];
         ymax = absy[2];
 
-        for (i = 0; i < rd / sizeof(struct input_event); i++)
-        {
+        for (i = 0; i < rd / sizeof(struct input_event); i++) {
             unsigned int type, code;
             type = ev[i].type;
             code = ev[i].code;
@@ -241,7 +238,7 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
             cy += yoff;
             apply_cursor_position(cx, cy);
             if (verbose == 1)
-                printf("\x1b[A\x1b[K\x1b[1;32m   - \x1b[;mMoved cursor to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", cx, cy);
+                printf("\x1b[A\x1b[K   \x1b[1;32m- \x1b[;mMoved cursor to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", cx, cy);
         }
     }
 
@@ -257,10 +254,8 @@ static int is_abs_device(int fd)
     memset(bit, 0, sizeof(bit));
     ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
 
-    for (type = 0; type < EV_MAX; type++)
-    {
-        if (test_bit(type, bit[0]) && type != EV_REP)
-        {
+    for (type = 0; type < EV_MAX; type++) {
+        if (test_bit(type, bit[0]) && type != EV_REP) {
             if (type == EV_ABS)
                 return 1;
         }
@@ -271,7 +266,7 @@ static int is_abs_device(int fd)
 
 static int is_event_device(const struct dirent *dir)
 {
-    return strncmp(EVENT_PREFIX, dir->d_name, 5) == 0;
+    return !strncmp(EVENT_PREFIX, dir->d_name, 5);
 }
 
 static int get_event_by_name(char *ename)
@@ -285,8 +280,7 @@ static int get_event_by_name(char *ename)
     if (ndev < 1)
         return -1;
 
-    for (i = 0; i < ndev; i++)
-    {
+    for (i = 0; i < ndev; i++) {
         char fname[64];
         int fd = -1;
         char name[256] = "\x1b[1;31mUnknown\x1b[;m";
@@ -303,6 +297,8 @@ static int get_event_by_name(char *ename)
         if (strcmp(ename, name) == 0)
             return i;
     }
+
+    return -1;
 }
 
 int input(int argc, char *argv[])
@@ -310,27 +306,23 @@ int input(int argc, char *argv[])
     int verbose = 0, event = 0;
     int xoff = 0, yoff = 0;
     char *p;
-    for (int i = 1; i < argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-v"))
             verbose = 1;
 
-        if (!strncmp(argv[i], "-event", 6))
-        {
+        if (!strncmp(argv[i], "-event", 6)) {
             char *eventstr = argv[i];
             shift_string(eventstr, 6);
             event = strtol(eventstr, &p, 10);
         }
 
-        if (!strncmp(argv[i], "-xoff", 5))
-        {
+        if (!strncmp(argv[i], "-xoff", 5)) {
             char *xoffstr = argv[i];
             shift_string(xoffstr, 5);
             xoff = strtol(xoffstr, &p, 10);
         }
 
-        if (!strncmp(argv[i], "-yoff", 5))
-        {
+        if (!strncmp(argv[i], "-yoff", 5)) {
             char *yoffstr = argv[i];
             shift_string(yoffstr, 5);
             yoff = strtol(yoffstr, &p, 10);
@@ -357,12 +349,10 @@ int input(int argc, char *argv[])
 
     logstr("Enabled verbose output.", verbose);
 
-    if (is_abs_device(fd) == 0)
-    {
-        if (verbose == 1)
-        {
-            printf("\x1b[1;31m => \x1b[;mEvent \x1b[1;37m%d \x1b[;mhas no absolute input!\n", event);
-            printf("\x1b[1;32m => \x1b[;mChecking for past events.\n");
+    if (!is_abs_device(fd)) {
+        if (verbose) {
+            printf(" \x1b[1;31m=> \x1b[;mEvent \x1b[1;37m%d \x1b[;mhas no absolute input!\n", event);
+            printf(" \x1b[1;32m=> \x1b[;mChecking for past events.\n");
         }
 
         char *buffer;
@@ -378,27 +368,24 @@ int input(int argc, char *argv[])
         fclose(fp);
         buffer[length] = '\0';
 
-        if (strcmp(buffer, "") == 0)
-        {
-            printf("\x1b[1;32m => \x1b[;mNo past events found.\n");
-            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
-            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+        if (strcmp(buffer, "") == 0) {
+            printf(" \x1b[1;32m=> \x1b[;mNo past events found.\n");
+            printf(" \x1b[1;32m=> \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf(" \x1b[1;32m=> \x1b[1;37mabstouch setevent\n\x1b[;m");
             return EXIT_FAILURE;
         }
 
         int newevent = get_event_by_name(buffer);
-        if (newevent == -1)
-        {
-            printf("\x1b[1;32m => \x1b[;mCouldn't get new event from old event.\n");
-            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
-            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+        if (newevent == -1) {
+            printf(" \x1b[1;32m=> \x1b[;mCouldn't get new event from old event.\n");
+            printf(" \x1b[1;32m=> \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf(" \x1b[1;32m=> \x1b[1;37mabstouch setevent\n\x1b[;m");
             return EXIT_FAILURE;
         }
 
-        if (verbose == 1)
-        {
-            printf("\x1b[1;32m => \x1b[;mFound moved past event \x1b[1;37m%d\x1b[;m.\n", newevent);
-            printf("\x1b[1;32m => \x1b[;mSetting event...\n");
+        if (verbose) {
+            printf(" \x1b[1;32m=> \x1b[;mFound moved past event \x1b[1;37m%d\x1b[;m.\n", newevent);
+            printf(" \x1b[1;32m=> \x1b[;mSetting event...\n");
         }
 
         event = newevent;
@@ -406,11 +393,10 @@ int input(int argc, char *argv[])
              "%s/%s%d", DEV_INPUT_DIR, EVENT_PREFIX, event);
         fd = open(fname, O_RDONLY);
 
-        if (is_abs_device(fd) == 0)
-        {
-            printf("\x1b[1;31m => \x1b[;mPast event doesn't have absolute input!\n");
-            printf("\x1b[1;32m => \x1b[;mIf you are sure your device supports absolute input, try following:\n");
-            printf("\x1b[1;32m => \x1b[1;37mabstouch setevent\n\x1b[;m");
+        if (!is_abs_device(fd)) {
+            printf(" \x1b[1;31m=> \x1b[;mPast event doesn't have absolute input!\n");
+            printf(" \x1b[1;32m=> \x1b[;mIf you are sure your device supports absolute input, try following:\n");
+            printf(" \x1b[1;32m=> \x1b[1;37mabstouch setevent\n\x1b[;m");
             return EXIT_FAILURE;
         }
 
@@ -419,10 +405,10 @@ int input(int argc, char *argv[])
         fclose(fp);
     }
 
-    if (verbose == 1) {
-      printf("  \x1b[1;32m - \x1b[;mFound absolute input on event \x1b[1;37m%d\x1b[;m.\n", event);
-      printf("  \x1b[1;32m - \x1b[;mSet offset to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", xoff, yoff);
-      printf("  \x1b[1;32m - \x1b[;mWaiting for input...\n");
+    if (verbose) {
+      printf("   \x1b[1;32m- \x1b[;mFound absolute input on event \x1b[1;37m%d\x1b[;m.\n", event);
+      printf("   \x1b[1;32m- \x1b[;mSet offset to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", xoff, yoff);
+      printf("   \x1b[1;32m- \x1b[;mWaiting for input...\n");
     }
 
     dpy = XOpenDisplay(0);

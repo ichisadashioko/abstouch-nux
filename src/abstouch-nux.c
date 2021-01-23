@@ -52,9 +52,8 @@ static char *str_replace(char *orig, char *rep, char *with)
     len_with = strlen(with);
 
     ins = orig;
-    for (count = 0; (tmp = strstr(ins, rep)); ++count) {
+    for (count = 0; (tmp = strstr(ins, rep)); ++count)
         ins = tmp + len_rep;
-    }
 
     tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
 
@@ -109,9 +108,8 @@ int main(int argc, char *argv[])
     }
 
     char *command = otherArgs[0];
-    for (size_t i = 0; i < strlen(command); i++) {
+    for (size_t i = 0; i < strlen(command); i++)
         command[i] = tolower(command[i]);
-    }
 
     if (!strcmp(command, "help")) {
         printf("\x1b[1;32m---====\x1b[1;37mabstouch-nux\x1b[1;32m====---\n");
@@ -234,9 +232,8 @@ int main(int argc, char *argv[])
     fgets(line, 256, cmd);
     pclose(cmd);
     char *otherRaw = str_replace(line, pidstring, "");
-    if (otherRaw == NULL) {
+    if (otherRaw == NULL)
         printf(" \x1b[1;31m=> \x1b[;mCouldn't get running processes!\n");
-    }
     char *other = str_replace(otherRaw, "\n", "");
 
     if (!strcmp(command, "start")) {
@@ -273,9 +270,9 @@ int main(int argc, char *argv[])
             char *p;
             pid_t daemonPid = strtol(other, &p, 10);
             int killRes = kill(daemonPid, SIGKILL);
-            if (killRes == 0) {
+            if (killRes == 0)
                 return EXIT_SUCCESS;
-            } else {
+            else {
                 printf(" \x1b[1;31m=> \x1b[;mCouldn't stop the abstouch-nux daemon!\n");
                 return EXIT_FAILURE;
             }
