@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
     if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
         printf(" \x1b[1;31m=> \x1b[;mEvent not set!\n");
         char *setevent_argv[1] = {"setevent"};
-        if (set_event(1, setevent_argv)) {
+        if (!set_event(1, setevent_argv)) {
             FILE *event_ff = fopen(EVENT_CONF_PATH, "rb");
             if (event_ff) {
                 fseek(event_ff, 0, SEEK_END);
