@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
     if (otherArgs_size < 1) {
         printf(" \x1b[1;31m=> \x1b[1;37mPlease provide a command!\n");
-        printf(" \x1b[1;32m=> \x1b[1;37mUsage: \x1b[;mabstouch <command> [options]\n");
+        printf(" \x1b[1;32m=> \x1b[1;37mUsage: \x1b[;mabstouch <command> [options?]\n");
         printf(" \x1b[1;32m=> \x1b[1;37mSee: \x1b[;mabstouch help\n");
         return EXIT_FAILURE;
     }
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
     if (!strcmp(command, "help")) {
         printf("\x1b[1;32m---====\x1b[1;37mabstouch-nux\x1b[1;32m====---\n");
-        printf("\x1b[1;32m => \x1b[1;37mUsage: \x1b[;mabstouch <command> [options]\n");
+        printf("\x1b[1;32m => \x1b[1;37mUsage: \x1b[;mabstouch <command> [options?]\n");
         printf("\n");
         printf("\x1b[1;32m---======\x1b[1;37mCommands\x1b[1;32m======---\n");
         printf("\x1b[1;32m => \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows help text.\n");

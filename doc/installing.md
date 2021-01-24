@@ -33,7 +33,9 @@ $ sudo dnf install gcc autoconf automake libX11-devel
 
 ### Building and Installing
 
-You can build using ***autotools*** and ***make***.
+* See **[dependencies](#installing-dependencies)** first.
+* You can build using ***autotools*** and ***make***.
+* Don't forget to add user to `input` group.
 
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
@@ -42,6 +44,7 @@ $ ./autogen.sh
 $ ./configure
 $ make
 $ sudo make install
+$ sudo usermod -aG input $(whoami)
 ```
 
 If you want to uninstall, just replace the `install` with `uninstall`.

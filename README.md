@@ -24,8 +24,9 @@ See **[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/insta
 
 ### Building From Source
 
-* You can use ***autotools*** to make it.
+* You can use ***autotools*** and ***make*** to make it.
 * Make sure you have `gcc`, `automake`, `autoconf` and `libx11-dev (libx11 or libX11-devel for some systems)` installed.
+* Don't forget to add user to `input` group.
 
 ```bash
 $ git clone https://github.com/acedron/abstouch-nux.git
@@ -34,17 +35,19 @@ $ ./autogen.sh
 $ ./configure
 $ make
 $ sudo make install
+$ sudo usermod -aG input $(whoami)
 ```
 
 You can replace `install` with `uninstall` if you want to uninstall.
 
 ## Usage
+* Make sure the user is in `input` group.
+
+* See **[usage](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md)** documentation for more information.
+
+* See **[examples](https://github.com/acedron/abstouch-nux/tree/master/examples)** directory for some examples.
 
 You can start the client right away.
-
-See **[usage](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md)** documentation for more information.
-
-See **[examples](https://github.com/acedron/abstouch-nux/tree/master/examples)** directory for some examples.
 
 ```bash
 $ abstouch start
