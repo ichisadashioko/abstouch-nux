@@ -58,6 +58,44 @@ static void shift_string(char *str, size_t n)
     memmove(str, str + n, len - n + 1);
 }
 
+static char *str_replace(char *orig, char *rep, char *with)
+{
+    char *result;
+    char *ins;
+    char *tmp;
+    int len_rep;
+    int len_with;
+    int len_front;
+    int count;
+
+    if (!orig || !rep)
+        return NULL;
+    len_rep = strlen(rep);
+    if (len_rep == 0)
+        return NULL;
+    if (!with)
+        with = "";
+    len_with = strlen(with);
+
+    ins = orig;
+    for (count = 0; (tmp = strstr(ins, rep)); ++count)
+        ins = tmp + len_rep;
+
+    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+    if (!result)
+        return NULL;
+    while (count--) {
+        ins = strstr(orig, rep);
+        len_front = ins - orig;
+        tmp = strncpy(tmp, orig, len_front) + len_front;
+        tmp = strcpy(tmp, with) + len_with;
+        orig += len_front + len_rep;
+    }
+    strcpy(tmp, orig);
+    return result;
+}
+
 static volatile sig_atomic_t stop = 0;
 static void interrupt_handler(int sig)
 {
@@ -334,7 +372,8 @@ int input(int argc, char *argv[])
         if (!strncmp(argv[i], "-display", 8)) {
             char *dpystr = argv[i];
             shift_string(dpystr, 8);
-            snprintf(displayName, sizeof(displayName), "%s", dpystr);
+            char *dpystrBuffer = str_replace(dpystr, "\n", "");
+            snprintf(displayName, sizeof(displayName), "%s", dpystrBuffer);
         }
 
         if (!strncmp(argv[i], "-screen", 7)) {
@@ -422,6 +461,7 @@ int input(int argc, char *argv[])
 
     if (verbose) {
       printf("   \x1b[1;32m- \x1b[;mFound absolute input on event \x1b[1;37m%d\x1b[;m.\n", event);
+      printf("   \x1b[1;32m- \x1b[;mBound to display \x1b[1;37m%s\x1b[;m.\x1b[1;37m%d\x1b[;m.\n", displayName, screenId);
       printf("   \x1b[1;32m- \x1b[;mSet offset to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", xoff, yoff);
       printf("   \x1b[1;32m- \x1b[;mWaiting for input...\n");
     }
