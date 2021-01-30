@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
     char *pidstring = malloc(pidS_length + 1);
     snprintf(pidstring, pidS_length + 1, "%d", pid);
     char line[256];
-    FILE *cmd = popen("pidof -x abstouch-nux", "r");
+    FILE *cmd = popen("pidof -x abstouch", "r");
     fgets(line, 256, cmd);
     pclose(cmd);
     char *otherRaw = str_replace(line, pidstring, "");
