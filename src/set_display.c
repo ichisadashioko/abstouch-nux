@@ -84,7 +84,7 @@ int set_display()
             if (p == s || *p != '\n')
                 printf("\x1b[A\x1b[2K \x1b[1;32m=> \x1b[1;37mEnter your display's name: \x1b[;m:");
             else {
-                snprintf(displayName, sizeof(displayName), ":%d", displayId);
+                snprintf(displayName, (sizeof(displayName) / sizeof(char)), ":%d", displayId);
                 int available = 0;
                 for (size_t i = 0; i < displays_size; i++) {
                     if (!strcmp(displayName, displays[i])) {

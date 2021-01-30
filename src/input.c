@@ -237,7 +237,7 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
             cx += xoff;
             cy += yoff;
             apply_cursor_position(cx, cy);
-            if (verbose == 1)
+            if (verbose)
                 printf("\x1b[A\x1b[K   \x1b[1;32m- \x1b[;mMoved cursor to \x1b[1;37m%d\x1b[1;32mx\x1b[1;37m%d\x1b[;m.\n", cx, cy);
         }
     }
@@ -306,6 +306,10 @@ int input(int argc, char *argv[])
     int verbose = 0, event = 0;
     int xoff = 0, yoff = 0;
     char *p;
+
+    char *displayName = malloc(sizeof(char *));
+    int screenId = 0;
+
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "-v"))
             verbose = 1;
@@ -326,6 +330,18 @@ int input(int argc, char *argv[])
             char *yoffstr = argv[i];
             shift_string(yoffstr, 5);
             yoff = strtol(yoffstr, &p, 10);
+        }
+
+        if (!strncmp(argv[i], "-display", 8)) {
+            char *dpystr = argv[i];
+            shift_string(dpystr, 8);
+            snprintf(displayName, sizeof(displayName), "%s", dpystr);
+        }
+
+        if (!strncmp(argv[i], "-screen", 7)) {
+            char *scrstr = argv[i];
+            shift_string(scrstr, 7);
+            screenId = strtol(scrstr, &p, 10);
         }
 
         if (!strcmp(argv[i], "-d")) {
@@ -411,8 +427,8 @@ int input(int argc, char *argv[])
       printf("   \x1b[1;32m- \x1b[;mWaiting for input...\n");
     }
 
-    dpy = XOpenDisplay(0);
-    root_window = XRootWindow(dpy, 0);
+    dpy = XOpenDisplay(displayName);
+    root_window = XRootWindow(dpy, screenId);
     XGetWindowAttributes(dpy, root_window, &xw_attrs);
 
     return input_to_display(fd, verbose, xoff, yoff);
