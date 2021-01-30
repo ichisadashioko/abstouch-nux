@@ -3,10 +3,10 @@
 ## Usage
 
 ```bash
-$ abstouch-nux <command> [options?]
+$ abstouch <command> [options?]
 ```
 
-### Additional Notes
+### Important
 
 * Make sure the user is in `input` group.
 * If the input system doesn't work, make sure you use **X11 / X.org *instead of* Wayland** to run desktop environment on.

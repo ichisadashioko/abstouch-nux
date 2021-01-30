@@ -20,4 +20,4 @@
 
 int set_offset();
 
-#endif
+#endif /* SET_OFFSET_H */

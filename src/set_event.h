@@ -20,4 +20,4 @@
 
 int set_event();
 
-#endif
+#endif /* SET_EVENT_H */

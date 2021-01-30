@@ -20,4 +20,4 @@
 
 int calibrate(int argc, char *argv[]);
 
-#endif
+#endif /* CALIBRATE_H */

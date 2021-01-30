@@ -20,7 +20,7 @@
 
 Only available for **GNU/Linux**.
 
-***See *[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/installing.md)* documentation for better guide.***
+**See *[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/installing.md)* documentation for better guide.**
 
 ### Building From Source
 
@@ -40,7 +40,7 @@ $ sudo usermod -aG input $(whoami)
 
 You can replace `install` with `uninstall` if you want to uninstall.
 
-## Side Notes
+## Important
 
 * Make sure the user is in `input` group, or else you have to run it using `sudo`.
 * If the input system doesn't work, make sure you use **X11 / X.org *instead of* Wayland** to run desktop environment on.
@@ -48,9 +48,9 @@ You can replace `install` with `uninstall` if you want to uninstall.
 ## Usage
 * Make sure the user is in `input` group.
 
-* See **[usage](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md)** documentation for more information.
+* **See *[usage](https://github.com/acedron/abstouch-nux/blob/master/doc/usage.md)* documentation for more information.**
 
-* See **[examples](https://github.com/acedron/abstouch-nux/tree/master/examples)** directory for some examples.
+* **See *[examples](https://github.com/acedron/abstouch-nux/tree/master/examples)* directory for some examples.**
 
 You can start the client right away.
 

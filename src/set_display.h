@@ -20,4 +20,4 @@
 
 int set_display();
 
-#endif
+#endif /* SET_DISPLAY_H */

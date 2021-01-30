@@ -30,7 +30,6 @@
 #include <dirent.h>
 
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 #define DEV_INPUT_DIR "/dev/input"
 #define EVENT_PREFIX "event"

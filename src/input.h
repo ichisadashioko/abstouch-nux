@@ -20,4 +20,4 @@
 
 int input(int argc, char *argv[]);
 
-#endif
+#endif /* INPUT_H */
