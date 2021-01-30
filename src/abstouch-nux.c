@@ -33,7 +33,7 @@
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
-#define PROCESS_NAME "abstouch-nux"
+#define PROCESS_NAME "abstouch"
 
 static char *str_replace(char *orig, char *rep, char *with)
 {
