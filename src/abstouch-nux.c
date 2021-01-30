@@ -19,6 +19,7 @@
 #include "calibrate.h"
 #include "set_event.h"
 #include "set_offset.h"
+#include "set_display.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -122,6 +123,7 @@ int main(int argc, char *argv[])
         printf("\x1b[1;32m => \x1b[;mcalibrate \x1b[1;32m=> \x1b[;mCalibrate to match your touchpad.\n");
         printf("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.\n");
         printf("\x1b[1;32m => \x1b[;msetoffset \x1b[1;32m=> \x1b[;mSet offset manually to match your touchpad.\n");
+        printf("\x1b[1;32m => \x1b[;msetdisplay \x1b[1;32m=> \x1b[;mSet display and screen to match your setup.\n");
         printf("\n");
         printf("\x1b[1;32m---=======\x1b[1;37mOptions\x1b[1;32m======---\n");
         printf("\x1b[1;32m => \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.\n");
@@ -130,13 +132,12 @@ int main(int argc, char *argv[])
         printf("\x1b[1;32m---====================---\n");
         printf("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;mman page for examples and more.\n");
         return EXIT_SUCCESS;
-    } else if (!strcmp(command, "setevent")) {
-        char *setevent_argv[1] = {"setevent"};
-        return set_event(1, setevent_argv);
-    } else if (!strcmp(command, "setoffset")) {
-        char *setoffset_argv[1] = {"setoffset"};
-        return set_offset(1, setoffset_argv);
-    }
+    } else if (!strcmp(command, "setevent"))
+        return set_event();
+    else if (!strcmp(command, "setoffset"))
+        return set_offset();
+    else if (!strcmp(command, "setdisplay"))
+        return set_display();
 
     int verbose = 1;
     int daemon = 0;

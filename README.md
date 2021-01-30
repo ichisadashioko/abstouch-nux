@@ -20,7 +20,7 @@
 
 Only available for **GNU/Linux**.
 
-See **[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/installing.md)** documentation for more information.
+***See *[installing](https://github.com/acedron/abstouch-nux/blob/master/doc/installing.md)* documentation for better guide.***
 
 ### Building From Source
 
@@ -40,6 +40,11 @@ $ sudo usermod -aG input $(whoami)
 
 You can replace `install` with `uninstall` if you want to uninstall.
 
+## Side Notes
+
+* Make sure the user is in `input` group, or else you have to run it using `sudo`.
+* If the input system doesn't work, make sure you use **X11 / X.org *instead of* Wayland** to run desktop environment on.
+
 ## Usage
 * Make sure the user is in `input` group.
 
@@ -57,6 +62,12 @@ You can calibrate input to match your touchpad.
 
 ```bash
 $ abstouch calibrate
+```
+
+You can select display and screen to match your setup.
+
+```bash
+$ abstouch setdisplay
 ```
 
 You can run it on background if you use `--daemon` flag.

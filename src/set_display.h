@@ -15,9 +15,9 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef SET_EVENT_H
-#define SET_EVENT_H
+#ifndef SET_DISPLAY_H
+#define SET_DISPLAY_H
 
-int set_event();
+int set_display();
 
 #endif

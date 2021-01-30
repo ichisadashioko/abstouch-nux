@@ -18,6 +18,6 @@
 #ifndef SET_OFFSET_H
 #define SET_OFFSET_H
 
-int set_offset(int argc, char *argv[]);
+int set_offset();
 
 #endif

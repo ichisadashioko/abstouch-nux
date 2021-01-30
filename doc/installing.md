@@ -48,3 +48,8 @@ $ sudo usermod -aG input $(whoami)
 ```
 
 If you want to uninstall, just replace the `install` with `uninstall`.
+
+## Side Notes
+
+* Make sure the user is in `input` group, or else you have to run it using `sudo`.
+* If the input system doesn't work, make sure you use **X11 / X.org *instead of* Wayland** to run desktop environment on.

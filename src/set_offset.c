@@ -24,7 +24,7 @@
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 
-int set_offset(int argc, char *argv[])
+int set_offset()
 {
     int xoff, yoff;
     char *p, xoffs[100], yoffs[100];
