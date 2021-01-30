@@ -19,6 +19,7 @@
 #include "calibrate.h"
 #include "set_event.h"
 #include "set_offset.h"
+#include "set_display.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -27,6 +28,8 @@
 #include <unistd.h>
 #include <signal.h>
 
+#define DISPLAY_CONF_PATH "/usr/local/share/abstouch-nux/display.conf"
+#define SCREEN_CONF_PATH "/usr/local/share/abstouch-nux/screen.conf"
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
@@ -78,12 +81,12 @@ int main(int argc, char *argv[])
     size_t otherArgs_size = 0;
 
     for (size_t i = 1; i < argc; i++) {
-        if (!strncmp(argv[i], "--", strlen("--"))) {
+        if (!strncmp(argv[i], "--", 2)) {
             memmove(argv[i], argv[i] + 2, strlen(argv[i]));
             options = (char **) realloc(options, (options_size + 1) * sizeof(char *));
             options[options_size] = argv[i];
             options_size += 1;
-        } else if (!strncmp(argv[i], "-", strlen("-"))) {
+        } else if (!strncmp(argv[i], "-", 1)) {
             memmove(argv[i], argv[i] + 1, strlen(argv[i]));
             for (size_t j = 0; j < strlen(argv[i]); j++) {
                 char *pChar = malloc(sizeof(char *));
@@ -113,30 +116,30 @@ int main(int argc, char *argv[])
 
     if (!strcmp(command, "help")) {
         printf("\x1b[1;32m---====\x1b[1;37mabstouch-nux\x1b[1;32m====---\n");
-        printf("\x1b[1;32m => \x1b[1;37mUsage: \x1b[;mabstouch <command> [options?]\n");
+        printf(" \x1b[1;32m=> \x1b[1;37mUsage: \x1b[;mabstouch <command> [options?]\n");
         printf("\n");
         printf("\x1b[1;32m---======\x1b[1;37mCommands\x1b[1;32m======---\n");
-        printf("\x1b[1;32m => \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows help text.\n");
-        printf("\x1b[1;32m => \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.\n");
-        printf("\x1b[1;32m => \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.\n");
-        printf("\x1b[1;32m => \x1b[;mcalibrate \x1b[1;32m=> \x1b[;mCalibrate to match your touchpad.\n");
-        printf("\x1b[1;32m => \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.\n");
-        printf("\x1b[1;32m => \x1b[;msetoffset \x1b[1;32m=> \x1b[;mSet offset manually to match your touchpad.\n");
+        printf(" \x1b[1;32m=> \x1b[;mhelp \x1b[1;32m=> \x1b[;mShows help text.\n");
+        printf(" \x1b[1;32m=> \x1b[;mstart \x1b[1;32m=> \x1b[;mStarts abstouch-nux.\n");
+        printf(" \x1b[1;32m=> \x1b[;mstop \x1b[1;32m=> \x1b[;mTerminates abstouch-nux daemon.\n");
+        printf(" \x1b[1;32m=> \x1b[;mcalibrate \x1b[1;32m=> \x1b[;mCalibrate to match your touchpad.\n");
+        printf(" \x1b[1;32m=> \x1b[;msetevent \x1b[1;32m=> \x1b[;mSet event to match touchpad.\n");
+        printf(" \x1b[1;32m=> \x1b[;msetoffset \x1b[1;32m=> \x1b[;mSet offset manually to match your touchpad.\n");
+        printf(" \x1b[1;32m=> \x1b[;msetdisplay \x1b[1;32m=> \x1b[;mSet display and screen to match your setup.\n");
         printf("\n");
         printf("\x1b[1;32m---=======\x1b[1;37mOptions\x1b[1;32m======---\n");
-        printf("\x1b[1;32m => \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.\n");
-        printf("\x1b[1;32m => \x1b[;m-d\x1b[1;32m, \x1b[;m--daemon \x1b[1;32m=> \x1b[;mRuns in background.\n");
+        printf(" \x1b[1;32m=> \x1b[;m-q\x1b[1;32m, \x1b[;m--quiet \x1b[1;32m=> \x1b[;mDisables output except err.\n");
+        printf(" \x1b[1;32m=> \x1b[;m-d\x1b[1;32m, \x1b[;m--daemon \x1b[1;32m=> \x1b[;mRuns in background.\n");
         printf("\n");
         printf("\x1b[1;32m---====================---\n");
-        printf("\x1b[1;32m => \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;mman page for examples and more.\n");
+        printf(" \x1b[1;32m=> \x1b[;mAlso see \x1b[1;37mabstouch.1 \x1b[;mman page for examples and more.\n");
         return EXIT_SUCCESS;
-    } else if (!strcmp(command, "setevent")) {
-        char *setevent_argv[1] = {"setevent"};
-        return set_event(1, setevent_argv);
-    } else if (!strcmp(command, "setoffset")) {
-        char *setoffset_argv[1] = {"setoffset"};
-        return set_offset(1, setoffset_argv);
-    }
+    } else if (!strcmp(command, "setevent"))
+        return set_event();
+    else if (!strcmp(command, "setoffset"))
+        return set_offset();
+    else if (!strcmp(command, "setdisplay"))
+        return set_display();
 
     int verbose = 1;
     int daemon = 0;
@@ -226,7 +229,7 @@ int main(int argc, char *argv[])
     pid_t pid = getpid();
     int pidS_length = snprintf(NULL, 0, "%d", pid);
     char *pidstring = malloc(pidS_length + 1);
-    snprintf( pidstring, pidS_length + 1, "%d", pid);
+    snprintf(pidstring, pidS_length + 1, "%d", pid);
     char line[256];
     FILE *cmd = popen("pidof -x abstouch-nux", "r");
     fgets(line, 256, cmd);
@@ -236,28 +239,59 @@ int main(int argc, char *argv[])
         printf(" \x1b[1;31m=> \x1b[;mCouldn't get running processes!\n");
     char *other = str_replace(otherRaw, "\n", "");
 
+    char *display = 0;
+    long display_length;
+    FILE *display_f = fopen(DISPLAY_CONF_PATH, "rb");
+    if (display_f) {
+        fseek(display_f, 0, SEEK_END);
+        display_length = ftell(display_f);
+        fseek(display_f, 0, SEEK_SET);
+        display = malloc(display_length + 1);
+        if (display)
+            fread(display, 1, display_length, display_f);
+        fclose(display_f);
+        display[display_length] = '\0';
+    }
+
+    int screen = 0;
+    char *p;
+    char *screenBuff = 0;
+    long screenBuff_length;
+    FILE *screenBuff_f = fopen(DISPLAY_CONF_PATH, "rb");
+    if (screenBuff_f) {
+        fseek(screenBuff_f, 0, SEEK_END);
+        screenBuff_length = ftell(screenBuff_f);
+        fseek(screenBuff_f, 0, SEEK_SET);
+        screenBuff = malloc(screenBuff_length + 1);
+        if (screenBuff)
+            fread(screenBuff, 1, screenBuff_length, screenBuff_f);
+        fclose(screenBuff_f);
+        screenBuff[screenBuff_length] = '\0';
+        screen = strtol(screenBuff, &p, 10);
+    }
+
     if (!strcmp(command, "start")) {
         if (!strcmp(other, "")) {
-            char *input_argv[6] = {"input"};
+            char *input_argv[8] = {"input"};
             char event_arg[256];
             char xoff_arg[256];
             char yoff_arg[256];
+            char dpy_arg[256];
+            char scr_arg[256];
             snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
             snprintf(xoff_arg, (sizeof(xoff_arg) / sizeof(char)), "-xoff%s", xoff);
             snprintf(yoff_arg, (sizeof(yoff_arg) / sizeof(char)), "-yoff%s", yoff);
+            snprintf(dpy_arg, (sizeof(dpy_arg) / sizeof(char)), "-display%s", display);
+            snprintf(scr_arg, (sizeof(scr_arg) / sizeof(char)), "-screen%d", screen);
             input_argv[1] = event_arg;
             input_argv[2] = xoff_arg;
             input_argv[3] = yoff_arg;
-            if (verbose && !daemon)
-                input_argv[4] = "-v";
-            else
-                input_argv[4] = "";
-            if (daemon)
-                input_argv[5] = "-d";
-            else
-                input_argv[5] = "";
+            input_argv[4] = dpy_arg;
+            input_argv[5] = scr_arg;
+            input_argv[6] = (verbose && !daemon) ? "-v" : "";
+            input_argv[7] = daemon ? "-d" : "";
 
-            return input(6, input_argv);
+            return input(8, input_argv);
         } else {
             printf(" \x1b[1;31m=> \x1b[;mAn abstouch-nux daemon is already running!\n");
             return EXIT_FAILURE;

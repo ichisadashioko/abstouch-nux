@@ -2,14 +2,12 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.70])
-AC_INIT([abstouch-nux], [1.4.0], [acedrons@yahoo.co.jp])
+AC_INIT([abstouch-nux], [1.5.0], [acedrons@yahoo.co.jp])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/input.h])
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_INSTALL
 
 # Checks for libraries.
 AC_CHECK_LIB([X11], [XWarpPointer])
@@ -27,12 +25,11 @@ AC_TYPE_SIZE_T
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([memmove memset select strtol])
+AC_CHECK_FUNCS([memmove memset select strstr strtol])
 
 AC_CONFIG_FILES([
     Makefile src/Makefile
     man/Makefile examples/Makefile
     config/Makefile completion/Makefile
-    doc/Makefile
-    ])
+    doc/Makefile])
 AC_OUTPUT

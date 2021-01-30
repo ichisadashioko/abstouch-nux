@@ -78,7 +78,7 @@ static int scan_devices(void)
     return max_device;
 }
 
-int set_event(int argc, char *argv[])
+int set_event()
 {
     int event;
     int max_input = scan_devices();

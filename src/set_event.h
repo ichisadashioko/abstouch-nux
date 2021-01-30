@@ -18,6 +18,6 @@
 #ifndef SET_EVENT_H
 #define SET_EVENT_H
 
-int set_event(int argc, char *argv[]);
+int set_event();
 
-#endif
+#endif /* SET_EVENT_H */

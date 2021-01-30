@@ -15,9 +15,9 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef SET_DISPLAY_H
+#define SET_DISPLAY_H
 
-int input(int argc, char *argv[]);
+int set_display();
 
-#endif /* INPUT_H */
+#endif /* SET_DISPLAY_H */

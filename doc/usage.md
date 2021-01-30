@@ -3,46 +3,51 @@
 ## Usage
 
 ```bash
-$ abstouch-nux <command> [options?]
+$ abstouch <command> [options?]
 ```
 
-### Additional Notes
+### Important
 
 * Make sure the user is in `input` group.
-* If the input system doesn't work, make sure you use **X11 *instead of* Wayland** to run desktop environment on.
+* If the input system doesn't work, make sure you use **X11 / X.org *instead of* Wayland** to run desktop environment on.
 
 ### Commands
 
 #### help
 
-* **Usage:** `abstouch-nux help`
+* **Usage:** `abstouch help`
 * **Description:** Shows help text.
 
 #### start
 
-* **Usage:** `abstouch-nux start [options?]`
+* **Usage:** `abstouch start [options?]`
 * **Description:** Starts the abstouch-nux input client.
 * **Options:** See **[options](#start-1)** part.
 
 #### stop
 
-* **Usage:** `abstouch-nux stop`
+* **Usage:** `abstouch stop`
 * **Description:** Stops the abstouch-nux daemon if present. See **[daemon option for start](#-d----daemon)** command.
 
 #### calibrate
 
-* **Usage:** `abstouch-nux calibrate`
+* **Usage:** `abstouch calibrate`
 * **Description:** Sets the touch offset and calibrates automatically.
 
 #### setevent
 
-* **Usage:** `abstouch-nux setevent`
+* **Usage:** `abstouch setevent`
 * **Description:** Sets the input event to use for abstouch-nux input.
 
 #### setoffset
 
-* **Usage:** `abstouch-nux setoffset`
+* **Usage:** `abstouch setoffset`
 * **Description:** Sets the touch offset manually.
+
+#### setdisplay
+
+* **Usage:** `abstouch setdisplay`
+* **Description:** Set display and screen to match your setup.
 
 ### Options
 
