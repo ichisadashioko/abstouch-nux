@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-abstouch-nux setevent
+abstouch setevent
 
-abstouch-nux calibrate
+abstouch calibrate
 
-abstouch-nux help
+abstouch help
 
-abstouch-nux start
+abstouch start
