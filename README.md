@@ -6,12 +6,14 @@
   <h6 align="center">
     <a href="https://github.com/acedron/abstouch-nux" alt="License">
       <img src="https://img.shields.io/github/license/acedron/abstouch-nux?style=for-the-badge"></a>
-    <a href="https://github.com/acedron/abstouch-nux/releases/latest" alt="Latest Release">
-      <img src="https://img.shields.io/github/v/release/acedron/abstouch-nux?include_prereleases&style=for-the-badge"></a>
-    <a href="https://github.com/acedron/abstouch-nux/commits/master" alt="Maintenance">
-      <img src="https://img.shields.io/maintenance/yes/2021?style=for-the-badge"></a>
-    <a href="https://github.com/acedron/abstouch-nux/commit/master" alt="AUR Maintainer">
-      <img src="https://img.shields.io/github/last-commit/acedron/abstouch-nux?style=for-the-badge"></a>
+    <a href="https://github.com/acedron/abstouch-nux/releases/latest">
+      <img src="https://img.shields.io/github/v/release/acedron/abstouch-nux?include_prereleases&style=for-the-badge" alt="Latest Release"></a>
+    <a href="https://github.com/acedron/abstouch-nux/commits/master">
+      <img src="https://img.shields.io/maintenance/yes/2021?style=for-the-badge" alt="Maintenance"></a>
+    <a href="https://github.com/acedron/abstouch-nux/commit/master">
+      <img src="https://img.shields.io/github/last-commit/acedron/abstouch-nux?style=for-the-badge" alt="Latest Commit"></a>
+    <a href="https://github.com/acedron/abstouch-nux/actions">
+      <img src="https://img.shields.io/github/workflow/status/acedron/abstouch-nux/C-C++%20CI?style=for-the-badge" alt="Continuous Integration"></a>
   </h6>
 </p>
 

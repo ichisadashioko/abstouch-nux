@@ -1,5 +1,5 @@
 # This workflow will build the source and test the integrity of newly built package.
-name: C/C++ CI
+name: C-C++ CI
 
 on:
   push:
