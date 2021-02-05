@@ -17,6 +17,7 @@
 ****************************************************************************/
 #define _GNU_SOURCE
 #include "calibrate.h"
+#include "str.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,14 +47,6 @@
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 #define NAME_ELEMENT(element) [element] = #element
-
-static void shift_string(char *str, size_t n)
-{
-    size_t len = strlen(str);
-    if (n > len)
-        return;
-    memmove(str, str + n, len - n + 1);
-}
 
 static volatile sig_atomic_t stop = 0;
 static void interrupt_handler(int sig)

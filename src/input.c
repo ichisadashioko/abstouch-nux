@@ -17,18 +17,17 @@
 ****************************************************************************/
 #define _GNU_SOURCE
 #include "input.h"
+#include "str.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <linux/input.h>
-
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
 #include <dirent.h>
 
+#include <linux/input.h>
 #include <X11/Xlib.h>
 
 #define DEV_INPUT_DIR "/dev/input"
@@ -44,57 +43,6 @@
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 #define NAME_ELEMENT(element) [element] = #element
 
-static void logstr(char *str, int verbose)
-{
-    if (verbose)
-        printf("   \x1b[1;32m- \x1b[;m%s\x1b[;m\n", str);
-}
-
-static void shift_string(char *str, size_t n)
-{
-    size_t len = strlen(str);
-    if (n > len)
-        return;
-    memmove(str, str + n, len - n + 1);
-}
-
-static char *str_replace(char *orig, char *rep, char *with)
-{
-    char *result;
-    char *ins;
-    char *tmp;
-    int len_rep;
-    int len_with;
-    int len_front;
-    int count;
-
-    if (!orig || !rep)
-        return NULL;
-    len_rep = strlen(rep);
-    if (len_rep == 0)
-        return NULL;
-    if (!with)
-        with = "";
-    len_with = strlen(with);
-
-    ins = orig;
-    for (count = 0; (tmp = strstr(ins, rep)); ++count)
-        ins = tmp + len_rep;
-
-    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
-
-    if (!result)
-        return NULL;
-    while (count--) {
-        ins = strstr(orig, rep);
-        len_front = ins - orig;
-        tmp = strncpy(tmp, orig, len_front) + len_front;
-        tmp = strcpy(tmp, with) + len_with;
-        orig += len_front + len_rep;
-    }
-    strcpy(tmp, orig);
-    return result;
-}
 
 static volatile sig_atomic_t stop = 0;
 static void interrupt_handler(int sig)

@@ -15,6 +15,8 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
+
+#include "str.h"
 #include "input.h"
 #include "calibrate.h"
 #include "set_event.h"
@@ -34,44 +36,6 @@
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 #define PROCESS_NAME "abstouch"
-
-static char *str_replace(char *orig, char *rep, char *with)
-{
-    char *result;
-    char *ins;
-    char *tmp;
-    int len_rep;
-    int len_with;
-    int len_front;
-    int count;
-
-    if (!orig || !rep)
-        return NULL;
-    len_rep = strlen(rep);
-    if (len_rep == 0)
-        return NULL;
-    if (!with)
-        with = "";
-    len_with = strlen(with);
-
-    ins = orig;
-    for (count = 0; (tmp = strstr(ins, rep)); ++count)
-        ins = tmp + len_rep;
-
-    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
-
-    if (!result)
-        return NULL;
-    while (count--) {
-        ins = strstr(orig, rep);
-        len_front = ins - orig;
-        tmp = strncpy(tmp, orig, len_front) + len_front;
-        tmp = strcpy(tmp, with) + len_with;
-        orig += len_front + len_rep;
-    }
-    strcpy(tmp, orig);
-    return result;
-}
 
 int main(int argc, char *argv[])
 {
