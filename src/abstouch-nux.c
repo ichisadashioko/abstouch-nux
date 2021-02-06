@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
                 options = (char **) realloc(options, (options_size + 1) * sizeof(char *));
                 options[options_size] = pChar;
                 options_size += 1;
-                free(pChar);
             }
         } else {
             otherArgs = (char **) realloc(otherArgs, (otherArgs_size + 1) * sizeof(char *));

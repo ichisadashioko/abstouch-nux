@@ -178,7 +178,6 @@ int set_display(void)
                 displays = (char **) realloc(displays, (displays_size + 1) * sizeof(char *));
                 displays[displays_size] = nameBuffer;
                 displays_size += 1;
-                free(nameBuffer);
 
                 printf("   \x1b[1;32m=> \x1b[1;37mDisplay %s\n", display_name);
                 int count = XScreenCount(dp);

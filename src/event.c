@@ -181,7 +181,6 @@ int get_event_by_name(char *ename)
             continue;
         ioctl(fd, EVIOCGNAME(sizeof(name)), name);
         close(fd);
-        free(namelist[i]);
 
         if (!strcmp(ename, name))
             return i;
