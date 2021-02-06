@@ -141,6 +141,7 @@ int calibrate(char *eventStr)
             printf(" \x1b[1;32m=> \x1b[1;37mabstouch setevent\n\x1b[;m");
             return EXIT_FAILURE;
         }
+        free(buffer);
 
         printf(" \x1b[1;32m=> \x1b[;mFound moved past event \x1b[1;37m%d\x1b[;m.\n", newevent);
         printf(" \x1b[1;32m=> \x1b[;mSetting event...\n");
@@ -173,6 +174,5 @@ int calibrate(char *eventStr)
 
     printf("\x1b[A\x1b[2K\x1b[1;32m= > \x1b[1;37mSuccessfully set offset as \x1b[;m%d\x1b[1;37mx\x1b[;m%d\x1b[1;37m.\x1b[;m\n",
         xoff, yoff);
-
     return EXIT_SUCCESS;
 }

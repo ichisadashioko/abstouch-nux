@@ -54,12 +54,13 @@ int main(int argc, char *argv[])
         } else if (!strncmp(argv[i], "-", 1)) {
             memmove(argv[i], argv[i] + 1, strlen(argv[i]));
             for (size_t j = 0; j < strlen(argv[i]); j++) {
-                char *pChar = malloc(sizeof(char *));
+                char *pChar = malloc(sizeof(char));
                 snprintf(pChar, sizeof(pChar), "%c", tolower(argv[i][j]));
 
                 options = (char **) realloc(options, (options_size + 1) * sizeof(char *));
                 options[options_size] = pChar;
                 options_size += 1;
+                free(pChar);
             }
         } else {
             otherArgs = (char **) realloc(otherArgs, (otherArgs_size + 1) * sizeof(char *));
@@ -200,6 +201,8 @@ int main(int argc, char *argv[])
     if (otherRaw == NULL)
         printf(" \x1b[1;31m=> \x1b[;mCouldn't get running processes!\n");
     char *other = str_replace(otherRaw, "\n", "");
+    free(pidstring);
+    free(other);
 
     char *display = 0;
     long display_length;
@@ -230,6 +233,7 @@ int main(int argc, char *argv[])
         fclose(screenBuff_f);
         screenBuff[screenBuff_length] = '\0';
         screen = strtol(screenBuff, &p, 10);
+        free(screenBuff);
     }
 
     if (!strcmp(command, "start")) {
@@ -256,5 +260,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    free(other);
+
+    free(display);
+    free(event);
+    free(xoff);
+    free(yoff);
+    free(options);
+    free(otherArgs);
     return EXIT_SUCCESS;
 }

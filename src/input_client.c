@@ -123,14 +123,14 @@ int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
     int xoff = 0, yoff = 0;
     char *p;
 
-    char *displayName = malloc(sizeof(char *));
-
     event = strtol(eventStr, &p, 10);
     xoff = strtol(xoffStr, &p, 10);
     yoff = strtol(yoffStr, &p, 10);
 
     char *dpystrBuffer = str_replace(displayStr, "\n", "");
+    char *displayName = malloc(sizeof(char *));
     snprintf(displayName, sizeof(displayName), "%s", dpystrBuffer);
+    free(dpystrBuffer);
 
     if (daemon) {
         pid_t childPid;
@@ -221,6 +221,5 @@ int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
     XGetWindowAttributes(dpy, root_window, &xw_attrs);
 
     free(displayName);
-
     return input_to_display(fd, verbose, xoff, yoff);
 }

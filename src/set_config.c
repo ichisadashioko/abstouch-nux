@@ -173,11 +173,12 @@ int set_display(void)
 
             Display *dp = XOpenDisplay(display_name);
             if (dp != NULL) {
-                char *nameBuffer = malloc(sizeof(char *));
+                char *nameBuffer = malloc(sizeof(display_name) / sizeof(char));
                 snprintf(nameBuffer, sizeof(nameBuffer), "%s", display_name);
                 displays = (char **) realloc(displays, (displays_size + 1) * sizeof(char *));
                 displays[displays_size] = nameBuffer;
                 displays_size += 1;
+                free(nameBuffer);
 
                 printf("   \x1b[1;32m=> \x1b[1;37mDisplay %s\n", display_name);
                 int count = XScreenCount(dp);
@@ -251,5 +252,7 @@ int set_display(void)
         return EXIT_FAILURE;
     }
 
+    free(displays);
+    free(screenCounts);
     return EXIT_SUCCESS;
 }
