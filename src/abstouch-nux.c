@@ -15,11 +15,11 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#include "input.h"
+
+#include "str_functions.h"
+#include "input_client.h"
 #include "calibrate.h"
-#include "set_event.h"
-#include "set_offset.h"
-#include "set_display.h"
+#include "set_config.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -33,48 +33,13 @@
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
-#define PROCESS_NAME "abstouch"
 
-static char *str_replace(char *orig, char *rep, char *with)
-{
-    char *result;
-    char *ins;
-    char *tmp;
-    int len_rep;
-    int len_with;
-    int len_front;
-    int count;
-
-    if (!orig || !rep)
-        return NULL;
-    len_rep = strlen(rep);
-    if (len_rep == 0)
-        return NULL;
-    if (!with)
-        with = "";
-    len_with = strlen(with);
-
-    ins = orig;
-    for (count = 0; (tmp = strstr(ins, rep)); ++count)
-        ins = tmp + len_rep;
-
-    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
-
-    if (!result)
-        return NULL;
-    while (count--) {
-        ins = strstr(orig, rep);
-        len_front = ins - orig;
-        tmp = strncpy(tmp, orig, len_front) + len_front;
-        tmp = strcpy(tmp, with) + len_with;
-        orig += len_front + len_rep;
-    }
-    strcpy(tmp, orig);
-    return result;
-}
+static char *process_name;
 
 int main(int argc, char *argv[])
 {
+    process_name = argv[0];
+
     char **options = (char **) malloc(0 * sizeof(char *));
     size_t options_size = 0;
     char **otherArgs = (char **) malloc(0 * sizeof(char *));
@@ -89,7 +54,7 @@ int main(int argc, char *argv[])
         } else if (!strncmp(argv[i], "-", 1)) {
             memmove(argv[i], argv[i] + 1, strlen(argv[i]));
             for (size_t j = 0; j < strlen(argv[i]); j++) {
-                char *pChar = malloc(sizeof(char *));
+                char *pChar = malloc(sizeof(char));
                 snprintf(pChar, sizeof(pChar), "%c", tolower(argv[i][j]));
 
                 options = (char **) realloc(options, (options_size + 1) * sizeof(char *));
@@ -166,8 +131,7 @@ int main(int argc, char *argv[])
 
     if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
         printf(" \x1b[1;31m=> \x1b[;mEvent not set!\n");
-        char *setevent_argv[1] = {"setevent"};
-        if (!set_event(1, setevent_argv)) {
+        if (!set_event()) {
             FILE *event_ff = fopen(EVENT_CONF_PATH, "rb");
             if (event_ff) {
                 fseek(event_ff, 0, SEEK_END);
@@ -190,13 +154,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (!strcmp(command, "calibrate")) {
-        char *calibrate_argv[2] = {"calibrate"};
-        char event_arg[256];
-        snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
-        calibrate_argv[1] = event_arg;
-        return calibrate(2, calibrate_argv);
-    }
+    if (!strcmp(command, "calibrate"))
+        return calibrate(event);
 
     char *xoff = 0;
     long xoff_length;
@@ -226,18 +185,23 @@ int main(int argc, char *argv[])
         yoff[yoff_length] = '\0';
     }
 
+    char pidofCommand[256];
+    snprintf(pidofCommand, sizeof(pidofCommand), "pidof -x %s", process_name);
+
     pid_t pid = getpid();
     int pidS_length = snprintf(NULL, 0, "%d", pid);
     char *pidstring = malloc(pidS_length + 1);
     snprintf(pidstring, pidS_length + 1, "%d", pid);
     char line[256];
-    FILE *cmd = popen("pidof -x abstouch", "r");
+    FILE *cmd = popen(pidofCommand, "r");
     fgets(line, 256, cmd);
     pclose(cmd);
     char *otherRaw = str_replace(line, pidstring, "");
     if (otherRaw == NULL)
         printf(" \x1b[1;31m=> \x1b[;mCouldn't get running processes!\n");
     char *other = str_replace(otherRaw, "\n", "");
+    free(pidstring);
+    free(otherRaw);
 
     char *display = 0;
     long display_length;
@@ -268,31 +232,13 @@ int main(int argc, char *argv[])
         fclose(screenBuff_f);
         screenBuff[screenBuff_length] = '\0';
         screen = strtol(screenBuff, &p, 10);
+        free(screenBuff);
     }
 
     if (!strcmp(command, "start")) {
-        if (!strcmp(other, "")) {
-            char *input_argv[8] = {"input"};
-            char event_arg[256];
-            char xoff_arg[256];
-            char yoff_arg[256];
-            char dpy_arg[256];
-            char scr_arg[256];
-            snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
-            snprintf(xoff_arg, (sizeof(xoff_arg) / sizeof(char)), "-xoff%s", xoff);
-            snprintf(yoff_arg, (sizeof(yoff_arg) / sizeof(char)), "-yoff%s", yoff);
-            snprintf(dpy_arg, (sizeof(dpy_arg) / sizeof(char)), "-display%s", display);
-            snprintf(scr_arg, (sizeof(scr_arg) / sizeof(char)), "-screen%d", screen);
-            input_argv[1] = event_arg;
-            input_argv[2] = xoff_arg;
-            input_argv[3] = yoff_arg;
-            input_argv[4] = dpy_arg;
-            input_argv[5] = scr_arg;
-            input_argv[6] = (verbose && !daemon) ? "-v" : "";
-            input_argv[7] = daemon ? "-d" : "";
-
-            return input(8, input_argv);
-        } else {
+        if (!strcmp(other, ""))
+            return input_client(event, xoff, yoff, display, screen, (verbose && !daemon), daemon);
+        else {
             printf(" \x1b[1;31m=> \x1b[;mAn abstouch-nux daemon is already running!\n");
             return EXIT_FAILURE;
         }
@@ -313,5 +259,13 @@ int main(int argc, char *argv[])
         }
     }
 
+    free(other);
+
+    free(display);
+    free(event);
+    free(xoff);
+    free(yoff);
+    free(options);
+    free(otherArgs);
     return EXIT_SUCCESS;
 }

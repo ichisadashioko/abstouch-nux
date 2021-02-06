@@ -15,9 +15,28 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef SET_DISPLAY_H
-#define SET_DISPLAY_H
+#ifndef STR_FUNCTIONS_H
+#define STR_FUNCTIONS_H
 
-int set_display();
+#include <stdlib.h>
 
-#endif /* SET_DISPLAY_H */
+/*
+ * Prints the `str` in a nice format if `verbose` is true.
+ */
+void logstr(char *str, int verbose);
+
+/*
+ * Shifts the `str` to left by `n` characters.
+ * Original code by Jonathan Leffler in Stack Overflow.
+ * https://stackoverflow.com/a/4761840
+ */
+void shift_string(char *str, size_t n);
+
+/*
+ * Replaces the `rep` in `orig` with `with`.
+ * Original code by jmucchiello in Stack Overflow.
+ * https://stackoverflow.com/a/779960
+ */
+char *str_replace(char *orig, char *rep, char *with);
+
+#endif /* STR_FUNCTIONS_H */

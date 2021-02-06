@@ -15,9 +15,34 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef SET_OFFSET_H
-#define SET_OFFSET_H
+#ifndef EVENT_H
+#define EVENT_H
 
-int set_offset();
+#include <dirent.h>
 
-#endif /* SET_OFFSET_H */
+#include <linux/input.h>
+
+#define DEV_INPUT_DIR "/dev/input"
+#define EVENT_PREFIX "event"
+
+extern const char *const events[EV_MAX + 1];
+
+extern const int maxval[EV_MAX + 1];
+
+extern const char *const absolutes[ABS_MAX + 1];
+
+extern const char *const keys[KEY_MAX + 1];
+
+extern const char *const *const names[EV_MAX + 1];
+
+int is_event_device(const struct dirent *dir);
+
+const char *typename(unsigned int type);
+
+const char *codename(unsigned int type, unsigned int code);
+
+int is_abs_device(int fd);
+
+int get_event_by_name(char *ename);
+
+#endif /* EVENT_H */

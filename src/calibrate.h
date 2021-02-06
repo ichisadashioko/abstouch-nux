@@ -18,6 +18,6 @@
 #ifndef CALIBRATE_H
 #define CALIBRATE_H
 
-int calibrate(int argc, char *argv[]);
+int calibrate(char *eventStr);
 
 #endif /* CALIBRATE_H */
