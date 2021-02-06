@@ -100,18 +100,10 @@ static void get_touch_limits(int fd, int *xoff, int *yoff)
     ioctl(fd, EVIOCGRAB, (void*)0);
 }
 
-int calibrate(int argc, char *argv[])
+int calibrate(char *eventStr)
 {
     int event = 0;
     char *p;
-
-    for (int i = 1; i < argc; i++) {
-        if (!strncmp(argv[i], "-event", 6)) {
-            char *eventstr = argv[i];
-            shift_string(eventstr, 6);
-            event = strtol(eventstr, &p, 10);
-        }
-    }
 
     int fd = -1;
     char fname[64];

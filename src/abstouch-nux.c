@@ -17,7 +17,7 @@
 ****************************************************************************/
 
 #include "str_functions.h"
-#include "input.h"
+#include "input_client.h"
 #include "calibrate.h"
 #include "set_config.h"
 
@@ -154,13 +154,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (!strcmp(command, "calibrate")) {
-        char *calibrate_argv[2] = {"calibrate"};
-        char event_arg[256];
-        snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
-        calibrate_argv[1] = event_arg;
-        return calibrate(2, calibrate_argv);
-    }
+    if (!strcmp(command, "calibrate"))
+        return calibrate(event);
 
     char *xoff = 0;
     long xoff_length;
@@ -258,7 +253,7 @@ int main(int argc, char *argv[])
             input_argv[6] = (verbose && !daemon) ? "-v" : "";
             input_argv[7] = daemon ? "-d" : "";
 
-            return input(8, input_argv);
+            return input_client(8, input_argv);
         } else {
             printf(" \x1b[1;31m=> \x1b[;mAn abstouch-nux daemon is already running!\n");
             return EXIT_FAILURE;

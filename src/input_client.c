@@ -16,7 +16,7 @@
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 #define _GNU_SOURCE
-#include "input.h"
+#include "input_client.h"
 #include "event.h"
 #include "str_functions.h"
 
@@ -116,7 +116,7 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
     return EXIT_SUCCESS;
 }
 
-int input(int argc, char *argv[])
+int input_client(int argc, char *argv[])
 {
     int verbose = 0, event = 0;
     int xoff = 0, yoff = 0;
@@ -214,6 +214,7 @@ int input(int argc, char *argv[])
             printf(" \x1b[1;32m=> \x1b[1;37mabstouch setevent\n\x1b[;m");
             return EXIT_FAILURE;
         }
+        free(buffer);
 
         if (verbose) {
             printf(" \x1b[1;32m=> \x1b[;mFound moved past event \x1b[1;37m%d\x1b[;m.\n", newevent);
@@ -247,6 +248,8 @@ int input(int argc, char *argv[])
     dpy = XOpenDisplay(displayName);
     root_window = XRootWindow(dpy, screenId);
     XGetWindowAttributes(dpy, root_window, &xw_attrs);
+
+    free(displayName);
 
     return input_to_display(fd, verbose, xoff, yoff);
 }

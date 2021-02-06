@@ -15,9 +15,9 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef INPUT_H
-#define INPUT_H
+#ifndef INPUT_CLIENT_H
+#define INPUT_CLIENT_H
 
-int input(int argc, char *argv[]);
+int input_client(int argc, char *argv[]);
 
-#endif /* INPUT_H */
+#endif /* INPUT_CLIENT_H */
