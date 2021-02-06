@@ -163,8 +163,6 @@ int calibrate(char *eventStr)
     int xoff = 0, yoff = 0;
     get_touch_limits(fd, &xoff, &yoff);
 
-    printf(" \x1b[1;31m=> \x1b[;mCouldn't set offset!\n");
-
     FILE *xfp = fopen(XOFF_CONF_PATH, "w");
     fprintf(xfp, "%d", xoff);
     fclose(xfp);
@@ -172,7 +170,7 @@ int calibrate(char *eventStr)
     fprintf(yfp, "%d", yoff);
     fclose(yfp);
 
-    printf("\x1b[A\x1b[2K\x1b[1;32m= > \x1b[1;37mSuccessfully set offset as \x1b[;m%d\x1b[1;37mx\x1b[;m%d\x1b[1;37m.\x1b[;m\n",
+    printf(" \x1b[1;32m=> \x1b[1;37mSuccessfully set offset as \x1b[;m%d\x1b[1;37mx\x1b[;m%d\x1b[1;37m.\x1b[;m\n",
         xoff, yoff);
     return EXIT_SUCCESS;
 }

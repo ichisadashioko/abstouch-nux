@@ -171,7 +171,7 @@ int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
         fclose(fp);
         buffer[length] = '\0';
 
-        if (strcmp(buffer, "") == 0) {
+        if (!strcmp(buffer, "")) {
             printf(" \x1b[1;32m=> \x1b[;mNo past events found.\n");
             printf(" \x1b[1;32m=> \x1b[;mIf you are sure your device supports absolute input, try following:\n");
             printf(" \x1b[1;32m=> \x1b[1;37mabstouch setevent\n\x1b[;m");
