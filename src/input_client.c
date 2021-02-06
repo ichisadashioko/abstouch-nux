@@ -116,60 +116,31 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
     return EXIT_SUCCESS;
 }
 
-int input_client(int argc, char *argv[])
+int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
+    int screenId, int verbose, int daemon)
 {
-    int verbose = 0, event = 0;
+    int event = 0;
     int xoff = 0, yoff = 0;
     char *p;
 
     char *displayName = malloc(sizeof(char *));
-    int screenId = 0;
 
-    for (int i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-v"))
-            verbose = 1;
+    event = strtol(eventStr, &p, 10);
+    xoff = strtol(xoffStr, &p, 10);
+    yoff = strtol(yoffStr, &p, 10);
 
-        if (!strncmp(argv[i], "-event", 6)) {
-            char *eventstr = argv[i];
-            shift_string(eventstr, 6);
-            event = strtol(eventstr, &p, 10);
-        }
+    char *dpystrBuffer = str_replace(displayStr, "\n", "");
+    snprintf(displayName, sizeof(displayName), "%s", dpystrBuffer);
 
-        if (!strncmp(argv[i], "-xoff", 5)) {
-            char *xoffstr = argv[i];
-            shift_string(xoffstr, 5);
-            xoff = strtol(xoffstr, &p, 10);
-        }
-
-        if (!strncmp(argv[i], "-yoff", 5)) {
-            char *yoffstr = argv[i];
-            shift_string(yoffstr, 5);
-            yoff = strtol(yoffstr, &p, 10);
-        }
-
-        if (!strncmp(argv[i], "-display", 8)) {
-            char *dpystr = argv[i];
-            shift_string(dpystr, 8);
-            char *dpystrBuffer = str_replace(dpystr, "\n", "");
-            snprintf(displayName, sizeof(displayName), "%s", dpystrBuffer);
-        }
-
-        if (!strncmp(argv[i], "-screen", 7)) {
-            char *scrstr = argv[i];
-            shift_string(scrstr, 7);
-            screenId = strtol(scrstr, &p, 10);
-        }
-
-        if (!strcmp(argv[i], "-d")) {
-            pid_t childPid;
-            childPid = fork();
-            if (childPid >= 0) {
-                if (childPid != 0)
-                    return EXIT_SUCCESS;
-            } else {
-                printf(" \x1b[1;31m=> \x1b[;mCouldn't start abstouch-nux daemon!");
-                return EXIT_FAILURE;
-            }
+    if (daemon) {
+        pid_t childPid;
+        childPid = fork();
+        if (childPid >= 0) {
+            if (childPid != 0)
+                return EXIT_SUCCESS;
+        } else {
+            printf(" \x1b[1;31m=> \x1b[;mCouldn't start abstouch-nux daemon!");
+            return EXIT_FAILURE;
         }
     }
 

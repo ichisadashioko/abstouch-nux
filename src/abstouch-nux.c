@@ -233,28 +233,9 @@ int main(int argc, char *argv[])
     }
 
     if (!strcmp(command, "start")) {
-        if (!strcmp(other, "")) {
-            char *input_argv[8] = {"input"};
-            char event_arg[256];
-            char xoff_arg[256];
-            char yoff_arg[256];
-            char dpy_arg[256];
-            char scr_arg[256];
-            snprintf(event_arg, (sizeof(event_arg) / sizeof(char)), "-event%s", event);
-            snprintf(xoff_arg, (sizeof(xoff_arg) / sizeof(char)), "-xoff%s", xoff);
-            snprintf(yoff_arg, (sizeof(yoff_arg) / sizeof(char)), "-yoff%s", yoff);
-            snprintf(dpy_arg, (sizeof(dpy_arg) / sizeof(char)), "-display%s", display);
-            snprintf(scr_arg, (sizeof(scr_arg) / sizeof(char)), "-screen%d", screen);
-            input_argv[1] = event_arg;
-            input_argv[2] = xoff_arg;
-            input_argv[3] = yoff_arg;
-            input_argv[4] = dpy_arg;
-            input_argv[5] = scr_arg;
-            input_argv[6] = (verbose && !daemon) ? "-v" : "";
-            input_argv[7] = daemon ? "-d" : "";
-
-            return input_client(8, input_argv);
-        } else {
+        if (!strcmp(other, ""))
+            return input_client(event, xoff, yoff, display, screen, (verbose && !daemon), daemon);
+        else {
             printf(" \x1b[1;31m=> \x1b[;mAn abstouch-nux daemon is already running!\n");
             return EXIT_FAILURE;
         }

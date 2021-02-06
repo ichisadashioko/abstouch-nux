@@ -18,6 +18,7 @@
 #ifndef INPUT_CLIENT_H
 #define INPUT_CLIENT_H
 
-int input_client(int argc, char *argv[]);
+int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
+    int screenId, int verbose, int daemon);
 
 #endif /* INPUT_CLIENT_H */
