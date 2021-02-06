@@ -18,7 +18,7 @@
 #define _GNU_SOURCE
 #include "input.h"
 #include "event.h"
-#include "str.h"
+#include "str_functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>

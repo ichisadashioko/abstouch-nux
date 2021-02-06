@@ -15,9 +15,22 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef SET_DISPLAY_H
-#define SET_DISPLAY_H
+#ifndef SET_CONFIG_H
+#define SET_CONFIG_H
 
-int set_display();
+/*
+ * Get X and Y offset from user manually and write to configuration.
+ */
+int set_offset(void);
 
-#endif /* SET_DISPLAY_H */
+/*
+ * Get input event from user and write to configuration.
+ */
+int set_event(void);
+
+/*
+ * Get display and screen id from user and write to configuration.
+ */
+int set_display(void);
+
+#endif /* SET_CONFIG_H */

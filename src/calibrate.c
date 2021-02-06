@@ -18,7 +18,7 @@
 #define _GNU_SOURCE
 #include "calibrate.h"
 #include "event.h"
-#include "str.h"
+#include "str_functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,75 +32,16 @@
 #include <dirent.h>
 
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
-#define DEV_INPUT_DIR "/dev/input"
-#define EVENT_PREFIX "event"
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define ENAME_CONF_PATH "/usr/local/share/abstouch-nux/ename.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 
-#define BITS_PER_LONG (sizeof(long) * 8)
-#define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
-#define OFF(x)  ((x)%BITS_PER_LONG)
-#define BIT(x)  (1UL<<OFF(x))
-#define LONG(x) ((x)/BITS_PER_LONG)
-#define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
-#define NAME_ELEMENT(element) [element] = #element
-
 static volatile sig_atomic_t stop = 0;
 static void interrupt_handler(int sig)
 {
     stop = 1;
-}
-
-static int is_abs_device(int fd)
-{
-    unsigned int type;
-    unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
-
-    memset(bit, 0, sizeof(bit));
-    ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
-
-    for (type = 0; type < EV_MAX; type++) {
-        if (test_bit(type, bit[0]) && type != EV_REP) {
-            if (type == EV_ABS)
-                return 1;
-        }
-    }
-
-    return 0;
-}
-
-static int get_event_by_name(char *ename)
-{
-    struct dirent **namelist;
-    int i, ndev, devnum;
-    char *filename;
-    int max_device = 0;
-
-    ndev = scandir(DEV_INPUT_DIR, &namelist, is_event_device, versionsort);
-    if (ndev < 1)
-        return -1;
-
-    for (i = 0; i < ndev; i++) {
-        char fname[64];
-        int fd = -1;
-        char name[256] = "\x1b[1;31mUnknown\x1b[;m";
-
-        snprintf(fname, sizeof(fname),
-            "%s/%s", DEV_INPUT_DIR, namelist[i]->d_name);
-        fd = open(fname, O_RDONLY);
-        if (fd < 0)
-            continue;
-        ioctl(fd, EVIOCGNAME(sizeof(name)), name);
-        close(fd);
-        free(namelist[i]);
-
-        if (!strcmp(ename, name))
-            return i;
-    }
 }
 
 static void get_touch_limits(int fd, int *xoff, int *yoff)

@@ -16,12 +16,10 @@
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 
-#include "str.h"
+#include "str_functions.h"
 #include "input.h"
 #include "calibrate.h"
-#include "set_event.h"
-#include "set_offset.h"
-#include "set_display.h"
+#include "set_config.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -35,10 +33,13 @@
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
-#define PROCESS_NAME "abstouch"
+
+static char *process_name;
 
 int main(int argc, char *argv[])
 {
+    process_name = argv[0];
+
     char **options = (char **) malloc(0 * sizeof(char *));
     size_t options_size = 0;
     char **otherArgs = (char **) malloc(0 * sizeof(char *));
@@ -130,8 +131,7 @@ int main(int argc, char *argv[])
 
     if (event && (!strcmp(event, "-1") || !strcmp(event, "-1\n"))) {
         printf(" \x1b[1;31m=> \x1b[;mEvent not set!\n");
-        char *setevent_argv[1] = {"setevent"};
-        if (!set_event(1, setevent_argv)) {
+        if (!set_event()) {
             FILE *event_ff = fopen(EVENT_CONF_PATH, "rb");
             if (event_ff) {
                 fseek(event_ff, 0, SEEK_END);
@@ -190,12 +190,15 @@ int main(int argc, char *argv[])
         yoff[yoff_length] = '\0';
     }
 
+    char pidofCommand[256];
+    snprintf(pidofCommand, sizeof(pidofCommand), "pidof -x %s", process_name);
+
     pid_t pid = getpid();
     int pidS_length = snprintf(NULL, 0, "%d", pid);
     char *pidstring = malloc(pidS_length + 1);
     snprintf(pidstring, pidS_length + 1, "%d", pid);
     char line[256];
-    FILE *cmd = popen("pidof -x abstouch", "r");
+    FILE *cmd = popen(pidofCommand, "r");
     fgets(line, 256, cmd);
     pclose(cmd);
     char *otherRaw = str_replace(line, pidstring, "");

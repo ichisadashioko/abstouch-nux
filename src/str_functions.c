@@ -16,7 +16,7 @@
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
 
-#include "str.h"
+#include "str_functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>

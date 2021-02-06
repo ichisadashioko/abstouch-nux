@@ -15,8 +15,8 @@
 ** You should have received a copy of the GNU General Public License
 ** along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef STR_H
-#define STR_H
+#ifndef STR_FUNCTIONS_H
+#define STR_FUNCTIONS_H
 
 #include <stdlib.h>
 
@@ -39,4 +39,4 @@ void shift_string(char *str, size_t n);
  */
 char *str_replace(char *orig, char *rep, char *with);
 
-#endif /* STR_H */
+#endif /* STR_FUNCTIONS_H */
