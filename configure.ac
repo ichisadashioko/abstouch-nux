@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([abstouch-nux], [1.5.2], [acedrons@yahoo.co.jp])
+AC_INIT([abstouch-nux], [1.5.3], [acedrons@yahoo.co.jp])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([src/input.h])
 
