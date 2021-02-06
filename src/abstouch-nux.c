@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
         printf(" \x1b[1;31m=> \x1b[;mCouldn't get running processes!\n");
     char *other = str_replace(otherRaw, "\n", "");
     free(pidstring);
-    free(other);
+    free(otherRaw);
 
     char *display = 0;
     long display_length;

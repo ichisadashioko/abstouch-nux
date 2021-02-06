@@ -109,8 +109,6 @@ static int scan_devices(void)
         sscanf(namelist[i]->d_name, "event%d", &devnum);
         if (devnum > max_device)
             max_device = devnum;
-
-        free(namelist[i]);
     }
 
     return max_device;
