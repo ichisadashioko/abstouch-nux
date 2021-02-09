@@ -32,18 +32,27 @@
 #define test_bit(bit, array)	((array[LONG(bit)] >> OFF(bit)) & 1)
 #define NAME_ELEMENT(element) [element] = #element
 
+/*
+ * A basic list of used events.
+ */
 const char *const events[EV_MAX + 1] = {
     [0 ... EV_MAX] = NULL,
     NAME_ELEMENT(EV_KEY),
     NAME_ELEMENT(EV_ABS)
 };
 
+/*
+ * A basic list of maximum values of used events.
+ */
 const int maxval[EV_MAX + 1] = {
     [0 ... EV_MAX] = -1,
     [EV_KEY] = KEY_MAX,
     [EV_ABS] = ABS_MAX
 };
 
+/*
+ * A basic list of input codes in absolute input type.
+ */
 const char *const absolutes[ABS_MAX + 1] = {
     [0 ... ABS_MAX] = NULL,
     NAME_ELEMENT(ABS_X),            NAME_ELEMENT(ABS_Y),
@@ -86,6 +95,9 @@ const char *const absolutes[ABS_MAX + 1] = {
 #endif
 };
 
+/*
+ * A basic list of used input keys.
+ */
 const char *const keys[KEY_MAX + 1] = {
     [0 ... KEY_MAX] = NULL,
     NAME_ELEMENT(BTN_0),                NAME_ELEMENT(BTN_1),
@@ -119,27 +131,42 @@ const char *const keys[KEY_MAX + 1] = {
     NAME_ELEMENT(BTN_TOOL_TRIPLETAP)
 };
 
+/*
+ * A basic list of all used input name codes.
+ */
 const char *const *const names[EV_MAX + 1] = {
     [0 ... EV_MAX] = NULL,
     [EV_KEY] = keys,
     [EV_ABS] = absolutes
 };
 
+/*
+ * Returns true if dirent starts with event prefix.
+ */
 int is_event_device(const struct dirent *dir)
 {
     return !strncmp(EVENT_PREFIX, dir->d_name, 5);
 }
 
+/*
+ * Returns the name of the type from `type` id.
+ */
 const char *typename(unsigned int type)
 {
     return (type <= EV_MAX && events[type]) ? events[type] : "?";
 }
 
+/*
+ * Returns the name of the input `code` that is in `type`.
+ */
 const char* codename(unsigned int type, unsigned int code)
 {
     return (type <= EV_MAX && code <= maxval[type] && names[type] && names[type][code]) ? names[type][code] : "?";
 }
 
+/*
+ * Returns true if the input event associated with `fd` has absolute input.
+ */
 int is_abs_device(int fd)
 {
     unsigned int type;
@@ -158,6 +185,9 @@ int is_abs_device(int fd)
     return 0;
 }
 
+/*
+ * Scans all events and returns the event id with the given name `ename`.
+ */
 int get_event_by_name(char *ename)
 {
     struct dirent **namelist;

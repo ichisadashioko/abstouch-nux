@@ -34,8 +34,15 @@
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 
+/*
+ * The process name of abstouch-nux to check the pid of.
+ */
 static char *process_name;
 
+/*
+ * Main CLI of abstouch-nux. Gets the config values, parses the commands and
+ * options and runs the functions according to them.
+ */
 int main(int argc, char *argv[])
 {
     process_name = argv[0];

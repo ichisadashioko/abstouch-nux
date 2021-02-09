@@ -33,17 +33,27 @@
 
 #include <X11/Xlib.h>
 
-#define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define ENAME_CONF_PATH "/usr/local/share/abstouch-nux/ename.conf"
 #define XOFF_CONF_PATH "/usr/local/share/abstouch-nux/xoff.conf"
 #define YOFF_CONF_PATH "/usr/local/share/abstouch-nux/yoff.conf"
 
+/*
+ * Interrupt signal handler that while loops depend on.
+ */
 static volatile sig_atomic_t stop = 0;
+
+/*
+ * Sets `stop` to true to stop loop when interrupting.
+ */
 static void interrupt_handler(int sig)
 {
     stop = 1;
 }
 
+/*
+ * Calculates the physical limits of touchpad from touch
+ * inputs from `fd` and sets `xoff` and `yoff` to the limits.
+ */
 static void get_touch_limits(int fd, int *xoff, int *yoff)
 {
     struct input_event ev[64];
@@ -100,6 +110,10 @@ static void get_touch_limits(int fd, int *xoff, int *yoff)
     ioctl(fd, EVIOCGRAB, (void*)0);
 }
 
+/*
+ * Sets touchpad offset config value to physically
+ * possible values which user touches to.
+ */
 int calibrate(char *eventStr)
 {
     int event = 0;
