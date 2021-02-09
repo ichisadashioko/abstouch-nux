@@ -18,6 +18,13 @@
 #ifndef INPUT_CLIENT_H
 #define INPUT_CLIENT_H
 
+/*
+ * Gets input fd from `eventStr`, get offsets from `x/yoffStr`, and get display
+ * and screen ids from `displayStr` and `screenId` to take input from touchpad
+ * and move cursor in display to the point where you touched in touchpad every
+ * possible moment, according to the arguments. It forks the process itself and
+ * kills this instance if `daemon` is true.
+ */
 int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
     int screenId, int verbose, int daemon);
 

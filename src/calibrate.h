@@ -18,6 +18,10 @@
 #ifndef CALIBRATE_H
 #define CALIBRATE_H
 
+/*
+ * Sets touchpad offset config value to physically
+ * possible values which user touches to.
+ */
 int calibrate(char *eventStr);
 
 #endif /* CALIBRATE_H */

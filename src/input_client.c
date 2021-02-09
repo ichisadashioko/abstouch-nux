@@ -34,16 +34,30 @@
 #define EVENT_CONF_PATH "/usr/local/share/abstouch-nux/event.conf"
 #define ENAME_CONF_PATH "/usr/local/share/abstouch-nux/ename.conf"
 
+/*
+ * Interrupt signal handler that while loops depend on.
+ */
 static volatile sig_atomic_t stop = 0;
+
+/*
+ * Sets `stop` to true to stop loop when interrupting.
+ */
 static void interrupt_handler(int sig)
 {
     stop = 1;
 }
 
+/*
+ * Display and screen pointer and attributes.
+ */
 static Display *dpy;
 static Window root_window;
 static XWindowAttributes xw_attrs;
 
+/*
+ * Clamp the `xval` and `yval` to match `x/ymin` and `x/ymax`,
+ * but also make them match the size of root window.
+ */
 static void map_input_to_display(int *xval, int xmin, int xmax,
     int *yval, int ymin, int ymax)
 {
@@ -51,6 +65,9 @@ static void map_input_to_display(int *xval, int xmin, int xmax,
     *yval = (*yval - ymin) / ((ymax - ymin) / xw_attrs.height);
 }
 
+/*
+ * Move the cursor to `x`, `y` position in root window.
+ */
 static void apply_cursor_position(int x, int y)
 {
     XSelectInput(dpy, root_window, KeyReleaseMask);
@@ -58,6 +75,10 @@ static void apply_cursor_position(int x, int y)
     XFlush(dpy);
 }
 
+/*
+ * Takes input from touchpad (`fd`) and moves cursor in display to the
+ * point where you touched in touchpad every possible moment.
+ */
 static int input_to_display(int fd, int verbose, int xoff, int yoff)
 {
     struct input_event ev[64];
@@ -116,6 +137,13 @@ static int input_to_display(int fd, int verbose, int xoff, int yoff)
     return EXIT_SUCCESS;
 }
 
+/*
+ * Gets input fd from `eventStr`, get offsets from `x/yoffStr`, and get display
+ * and screen ids from `displayStr` and `screenId` to take input from touchpad
+ * and move cursor in display to the point where you touched in touchpad every
+ * possible moment, according to the arguments. It forks the process itself and
+ * kills this instance if `daemon` is true.
+ */
 int input_client(char *eventStr, char *xoffStr, char *yoffStr, char *displayStr,
     int screenId, int verbose, int daemon)
 {
