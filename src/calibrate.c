@@ -172,7 +172,7 @@ int calibrate(char *eventStr)
 
     printf(" \x1b[1;32m=> \x1b[1;37mRub your finger over the edges and corners of\n");
     printf(" \x1b[1;32m=> \x1b[1;37myour touchpad for like 30 seconds or more and then\n");
-    printf(" \x1b[1;32m=> \x1b[1;37mclose as possible to 0 and then left click on your touchpad.\n\n");
+    printf(" \x1b[1;32m=> \x1b[1;37mleft click using the button on your touchpad.\n\n");
 
     int xoff = 0, yoff = 0;
     get_touch_limits(fd, &xoff, &yoff);

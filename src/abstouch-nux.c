@@ -243,8 +243,10 @@ int main(int argc, char *argv[])
     }
 
     if (!strcmp(command, "start")) {
-        if (!strcmp(other, ""))
+        if (!strcmp(other, "")) {
+            printf(" \x1b[1;32m=> \x1b[;mStarting abstouch-nux.");
             return input_client(event, xoff, yoff, display, screen, (verbose && !daemon), daemon);
+        }
         else {
             printf(" \x1b[1;31m=> \x1b[;mAn abstouch-nux daemon is already running!\n");
             return EXIT_FAILURE;
