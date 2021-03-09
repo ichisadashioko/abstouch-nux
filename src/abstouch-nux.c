@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 
     if (!strcmp(command, "start")) {
         if (!strcmp(other, "")) {
-            printf(" \x1b[1;32m=> \x1b[;mStarting abstouch-nux.");
+            printf(" \x1b[1;32m=> \x1b[;mStarting abstouch-nux.\n");
             return input_client(event, xoff, yoff, display, screen, (verbose && !daemon), daemon);
         }
         else {

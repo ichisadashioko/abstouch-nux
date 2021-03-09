@@ -118,6 +118,7 @@ int calibrate(char *eventStr)
 {
     int event = 0;
     char *p;
+    event = strtol(eventStr, &p, 10);
 
     int fd = -1;
     char fname[64];
