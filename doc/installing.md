@@ -9,6 +9,7 @@ Only available for **GNU/Linux**.
 The dependencies are:
 
 * **gcc**
+* **make**
 * **autoconf**
 * **automake**
 * **libx11-dev** (*libx11* or *libX11-devel* On Some Systems)
@@ -16,19 +17,25 @@ The dependencies are:
 #### Arch Linux (Manjaro, Artix, etc.)
 
 ```bash
-$ sudo pacman -Sy gcc autoconf automake libx11 --needed
+$ sudo pacman -Sy make gcc autoconf automake libx11 --needed
 ```
 
 #### Debian (Ubuntu, Kali, Mint, etc.)
 
 ```bash
-$ sudo apt-get update && sudo apt-get install gcc autoconf automake libx11-dev
+$ sudo apt-get update && sudo apt-get make install gcc autoconf automake libx11-dev
 ```
 
-#### Fedora (CentOS, Red Hat, openSUSE, etc.)
+#### Fedora (CentOS, Red Hat etc.)
 
 ```bash
-$ sudo dnf install gcc autoconf automake libX11-devel
+$ sudo dnf install make gcc autoconf automake libX11-devel 
+```
+
+#### openSUSE
+
+```bash
+$ sudo zypper install make gcc autoconf automake libX11-devel
 ```
 
 ### Building and Installing
